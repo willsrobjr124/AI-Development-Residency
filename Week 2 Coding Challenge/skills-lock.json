@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "skills": {
+    "competitor-analysis": {
+      "source": "phuryn/pm-skills",
+      "sourceType": "github",
+      "skillPath": "pm-market-research/skills/competitor-analysis/SKILL.md",
+      "computedHash": "182488f313aba2174ed888e6d77cb6920c2fbf40604cf40bf07a04128bf39f3f"
+    },
+    "create-prd": {
+      "source": "phuryn/pm-skills",
+      "sourceType": "github",
+      "skillPath": "pm-execution/skills/create-prd/SKILL.md",
+      "computedHash": "95a4d8b01131e507dd5a11710740d679cecad87debdc0b33d3367eaefce2c8da"
+    },
+    "customer-journey-map": {
+      "source": "phuryn/pm-skills",
+      "sourceType": "github",
+      "skillPath": "pm-market-research/skills/customer-journey-map/SKILL.md",
+      "computedHash": "8f9e591c23c212878bdf34a2c083e0bb09d717ef0a32a4ac065acd6f7bee94ef"
+    },
+    "market-sizing": {
+      "source": "phuryn/pm-skills",
+      "sourceType": "github",
+      "skillPath": "pm-market-research/skills/market-sizing/SKILL.md",
+      "computedHash": "566955818d1f1ca9115d846e556183034071a09147ce550732efa2518f9998fb"
+    },
+    "pre-mortem": {
+      "source": "phuryn/pm-skills",
+      "sourceType": "github",
+      "skillPath": "pm-execution/skills/pre-mortem/SKILL.md",
+      "computedHash": "c65c8678f31896a2dccb1df2d8245abaf02efbfd58af2128a06f4ac711a57f4d"
+    },
+    "prioritize-features": {
+      "source": "phuryn/pm-skills",
+      "sourceType": "github",
+      "skillPath": "pm-product-discovery/skills/prioritize-features/SKILL.md",
+      "computedHash": "ccfabdf9944819b0d46ec3d8621be11a731e2f476ecc50c0a099759d3341f8e8"
+    },
+    "user-personas": {
+      "source": "phuryn/pm-skills",
+      "sourceType": "github",
+      "skillPath": "pm-market-research/skills/user-personas/SKILL.md",
+      "computedHash": "ee72fcbc6025177be0f7b44794e4e9387f4c6ad463baebc13d82751185f9945a"
+    },
+    "user-stories": {
+      "source": "phuryn/pm-skills",
+      "sourceType": "github",
+      "skillPath": "pm-execution/skills/user-stories/SKILL.md",
+      "computedHash": "f430b0828102f2f54eb5d1658726e8feaacae9f04afad6ab56e5d6334e4f7dd7"
+    },
+    "value-proposition": {
+      "source": "phuryn/pm-skills",
+      "sourceType": "github",
+      "skillPath": "pm-product-strategy/skills/value-proposition/SKILL.md",
+      "computedHash": "b9bfc23451e23a465a2192e612fe8f8da4e45f615ec6385758b3487ff73f0e9d"
+    }
+  }
+}
