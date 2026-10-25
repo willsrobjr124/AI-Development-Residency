@@ -8,13 +8,34 @@ A mobile budgeting app for adults with ADHD. It shows what is safe to spend in o
 - `docs/epics-and-features.md`: every MVP feature with its user story
 - Skills in `.claude/skills/` (load the matching one before working):
 
+**Product and design**
+
 | Skill | Use it when |
 |---|---|
 | `mvp-scope` | Planning or building any feature; deciding if something is in scope |
 | `adhd-ux-guidelines` | Any screen, component, notification or UI copy |
+| `mobile-accessibility` | Any component or screen: labels, font scaling, reduced motion |
 | `safe-to-spend-math` | Money amounts, safe-to-spend, bills, recurring detection |
-| `react-native-best-practices` | Performance, lists, animations, bundle size |
+
+**Engineering**
+
+| Skill | Use it when |
+|---|---|
+| `dev-workflow` | Starting a feature, committing, opening a PR, setting up CI |
+| `expo-overview` | Any Expo task; it routes to the right Expo skill |
+| `expo-project-structure` | Scaffolding the app or deciding where a file lives |
+| `expo-router` | Screens, navigation, tabs, modals, sheets |
+| `expo-design-system` | Theme tokens and reusable components |
+| `expo-native-ui` | Making screens feel native |
+| `expo-animation` | Bucket fills, celebrations, gestures (respect reduced motion) |
+| `expo-data-fetching` | Network requests, caching, offline behavior |
+| `expo-dev-client` | Building a development build to test on a phone |
+| `local-data-and-state` | Tables, repositories, app state, migrations, sync |
+| `reminders-and-notifications` | Bill reminders, weekly check-in, snooze |
+| `fintech-security-privacy` | Auth, keys, bank linking, logging, analytics, data deletion |
 | `supabase` | Auth, database schema, migrations, row-level security |
+| `react-native-best-practices` | Performance, lists, animations, bundle size |
+| `testing-react-native` | Writing or fixing tests; before calling a feature done |
 | `systematic-debugging` | Any bug or failing test, before proposing a fix |
 | `verification-before-completion` | Before saying work is done, committing or opening a PR |
 

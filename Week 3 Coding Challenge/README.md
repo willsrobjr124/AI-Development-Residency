@@ -19,6 +19,15 @@ This folder is set up for building the MVP with Claude Code. The app itself has 
 | `supabase` | Supabase auth, database and security guidance | Supabase |
 | `systematic-debugging` | Root-cause debugging process | obra/superpowers |
 | `verification-before-completion` | Check work before claiming it is done | obra/superpowers |
+| `dev-workflow` | Vertical slices, commits, definition of done, code review, CI | Written for this project |
+| `testing-react-native` | Jest and React Native Testing Library, test-first money logic | Written for this project |
+| `local-data-and-state` | Local-first storage with expo-sqlite, repositories, state, sync | Written for this project |
+| `mobile-accessibility` | Roles and labels, font scaling, reduced motion, screen reader checks | Written for this project |
+| `fintech-security-privacy` | Secrets, token storage, row-level security, Plaid flow, analytics rules | Written for this project |
+| `reminders-and-notifications` | Bill reminders, check-in nudge and snooze with expo-notifications | Written for this project |
+| `expo-overview`, `expo-project-structure`, `expo-router`, `expo-design-system`, `expo-native-ui`, `expo-animation`, `expo-data-fetching`, `expo-dev-client` | Official Expo guidance (MIT), installed with the `skills` CLI; versions pinned in `skills-lock.json` | [expo/skills](https://github.com/expo/skills) |
+
+To update the Expo skills later, run `npx skills@latest update` from this folder.
 
 ## Proposed stack
 
