@@ -2,6 +2,8 @@
 
 Epics 1 to 3 are MVP #1 (closed beta). Epic 4 is the MMP (public launch) and is out of scope for this repo for now.
 
+Every feature also meets `BANKING_PRD_TECHNICAL_REQUIREMENTS.md`: encrypted local data, biometric unlock with a 5-minute lock, privacy blur, idempotent and atomic writes, and the four UI states.
+
 ## Epic 1: Easy Start
 
 | Feature | User story |
@@ -17,7 +19,8 @@ Epics 1 to 3 are MVP #1 (closed beta). Epic 4 is the MMP (public launch) and is 
 | Feature | User story |
 |---|---|
 | Safe-to-spend number | As an adult with ADHD, I want one number showing what I can safely spend after bills and savings, so that I don't do the math in my head. |
-| Home-screen widget | As a user for whom money is out of sight, out of mind, I want safe-to-spend on my home screen, so that I see it without opening the app. |
+| Visual buckets | As an adult with ADHD who finds lists of numbers hard to hold in mind, I want my money shown as Spending, Bills and Savings buckets that fill and empty, so that I can see where it is at a glance. |
+| Home-screen widget | As a user for whom money is out of sight, out of mind, I want a home-screen shortcut to safe-to-spend and quick add, so that I check it without hunting for the app. The amount is hidden ("Tap to view") unless I choose to show it. |
 | Automatic transaction import | As a user who can't keep up with logging, I want transactions to import and sort themselves, so that the app stays accurate when I forget it. |
 | Quick add | As a user who pays cash sometimes, I want to log an expense in two taps, so that logging actually happens. |
 | Bill countdown | As a surprise-hit spender, I want to see bills due in the next 7 days, so that nothing catches me off guard. |

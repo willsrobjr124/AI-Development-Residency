@@ -13,10 +13,14 @@ description: How to test this Expo app with Jest and React Native Testing Librar
 
 ## What to test, in priority order
 
+**Unhappy paths first** (required by `docs/BANKING_PRD_TECHNICAL_REQUIREMENTS.md`): for every feature, write the error, offline, timeout and invalid-input tests before the success-path test.
+
 1. **Money logic, test first.** Safe-to-spend, bill rollover, recurring detection, cents formatting. Write the failing test from the `safe-to-spend-math` skill's required cases, then the code. These must be pure functions with no React or storage inside.
 2. **Data layer.** Repository functions that read and write local data (use an in-memory database or a fake repository).
 3. **Screens, by behavior.** What the user sees and does: "after adding $12, safe-to-spend shows $108.00". Not implementation details.
 4. **ADHD rules that can regress.** No negative safe-to-spend shown, undo appears after delete, setup resumes at the saved step.
+5. **The four states.** Each screen test covers Initial, Loading, Success and Error (with the shame-free recovery text and no data lost).
+6. **Security behavior.** Double tap creates one record (same idempotency key); a failed multi-row write rolls back; after 5 minutes of inactivity the lock screen shows and sensitive values are gone from the rendered tree (use fake timers); the blur overlay renders when `AppState` changes to `background`; nothing sensitive is written to AsyncStorage.
 
 Skip snapshot tests: they break on every style change and catch nothing users care about.
 
@@ -29,7 +33,7 @@ Skip snapshot tests: they break on every style change and catch nothing users ca
 
 ## Mocks
 
-- Mock native modules at the boundary only: notifications, secure store, network. Keep the logic under test real.
+- Mock native modules at the boundary only: notifications, secure store, local authentication, blur, jailbreak detection, SSL pinning, network. Keep the logic under test real.
 - Never call real Supabase or Plaid from tests.
 
 ## Commands

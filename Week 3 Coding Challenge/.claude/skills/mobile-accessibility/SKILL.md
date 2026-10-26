@@ -28,7 +28,7 @@ Format amounts for speech in the label: visible text "$120.00", `accessibilityLa
 ## Motion and sound
 
 - Read the system setting: `AccessibilityInfo.isReduceMotionEnabled()` or Reanimated's `useReducedMotion()`, combined with the in-app "reduce motion" toggle.
-- When reduced motion is on, buckets update without animation and celebrations become a static message.
+- When reduced motion is on, buckets update without animation and Lottie celebrations are replaced by a static icon and message (render the first frame or skip the animation; do not just slow it down).
 - Never autoplay sound; haptics are optional and follow the user setting.
 
 ## Focus and announcements
@@ -36,6 +36,12 @@ Format amounts for speech in the label: visible text "$120.00", `accessibilityLa
 - After an action, announce the result when it is not visible: `AccessibilityInfo.announceForAccessibility('Expense added')`.
 - Modals and sheets trap focus and return it to the trigger when closed.
 - Headings use `accessibilityRole="header"` so screen reader users can jump between sections.
+
+## Lock screen and privacy blur
+
+- The lock screen's unlock button is labelled "Unlock with Face ID" (or the method in use) and offers the device passcode as a fallback, so users who cannot use biometrics are never stuck.
+- When the 5-minute lock appears, announce it ("Locked to keep your money private") and move focus to the unlock button.
+- Masked values ("Tap to view", hidden amounts) have a label that says they are hidden, not a string of dots read aloud.
 
 ## Test before done
 

@@ -31,11 +31,13 @@ No other notifications in the MVP: no streak warnings, no "we miss you", no mark
 
 ## Copy
 
-- Neutral and specific: "Phone bill due in 2 days ($45)". Not "Don't forget!!" or "You're about to be late".
+- Neutral and specific: "Phone bill due in 2 days". Not "Don't forget!!" or "You're about to be late".
+- **No amounts or balances by default.** Notifications show on the lock screen, so they are masked for privacy (`banking-security` section 3). Amounts ("Phone bill due in 2 days ($45)") appear only if the user turns on "Show amounts in notifications" in settings. Never put a balance or safe-to-spend number in a notification.
+- Notification payloads carry only ids (bill id), never money values; the app reads the details from the encrypted database after unlock.
 - The check-in nudge: "Your 60-second check-in is ready when you are."
 - Respect quiet hours (default 21:00 to 8:00): move reminders to the next allowed time.
 
 ## Testing
 
-- Mock `expo-notifications` in unit tests and assert what was scheduled (title, trigger date, id stored).
+- Mock `expo-notifications` in unit tests and assert what was scheduled (title, trigger date, id stored), and that the text has no amount unless the opt-in is on.
 - Test on a real device for delivery and actions; simulators handle notifications inconsistently.

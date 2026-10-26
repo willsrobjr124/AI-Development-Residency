@@ -27,6 +27,16 @@ safe_to_spend = available_balance
 - **If the result is below zero:** show $0 with neutral copy ("Bills coming up use all of this period's money") and the breakdown. Never show a red negative number.
 - The breakdown screen lists each line so users can see how the number was made.
 
+## Buckets
+
+The three visual buckets are a view of the same numbers, so they always add up:
+
+- **Bills bucket** = sum of unpaid bills due on or before the period end.
+- **Savings bucket** = savings set-asides for the period.
+- **Spending bucket** = safe-to-spend (floored at $0 for display).
+- Spending + Bills + Savings = available balance whenever safe-to-spend is not negative; when it is negative, show the shortfall copy, never a negative bucket.
+- **Moving money** between Spending and Savings changes the set-aside amount. It is one atomic, idempotent write (see `banking-security` section 6), and the move can be undone.
+
 ## Bill countdown
 
 - Show unpaid bills due in the next 7 days, soonest first, with "N days left" ("Due today" for 0).
@@ -53,3 +63,5 @@ Write unit tests for the calculation before wiring UI. Cover at least:
 - Result below zero shows $0 and the shortfall copy
 - No payday set uses a 30-day period
 - Cents rounding: 3 items of $0.10 sum to exactly 30 cents
+- Buckets add up to the available balance
+- Moving $20 from Spending to Savings twice with the same idempotency key moves it only once

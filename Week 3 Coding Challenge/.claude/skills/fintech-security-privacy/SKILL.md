@@ -15,14 +15,18 @@ Users trust this app with their money data, and many are anxious about it alread
 
 ## On the device
 
-- Auth sessions and tokens: `expo-secure-store`, never AsyncStorage or SQLite.
-- Financial data in local SQLite is acceptable for the MVP; offer an optional app lock (device biometrics) in settings.
-- Never write amounts, merchants or account numbers to `console.log` in release builds.
+Device, session, network and runtime controls are required and live in the `banking-security` skill (from `docs/BANKING_PRD_TECHNICAL_REQUIREMENTS.md`). In short:
+
+- Auth sessions, tokens and the database key: `expo-secure-store` (Keychain / Keystore), never AsyncStorage or plain SQLite.
+- Financial data lives only in the SQLCipher-encrypted (AES-256) database; nothing sensitive in plaintext anywhere.
+- Biometric unlock, a 5-minute inactivity lock that clears sensitive memory, and a blur overlay when the app goes to the background.
+- No `console.*` output at all in production builds.
 
 ## Supabase
 
 - Row-level security on every table, with policies scoped to `auth.uid()`. A table without RLS must not ship. Use the `supabase` skill's security checks.
 - The app uses the anon key only. Service-role access happens only in Edge Functions.
+- Writes go through Edge Functions or Postgres functions that accept an `X-Idempotency-Key` and run in one transaction (see `banking-security` section 6).
 
 ## Bank linking (Plaid, after manual mode)
 
