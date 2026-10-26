@@ -7,6 +7,8 @@ A mobile budgeting app for adults with ADHD. It shows what is safe to spend in o
 - `docs/PRD-summary.md`: problem, audiences, goals, key results
 - `docs/epics-and-features.md`: every MVP feature with its user story
 - `docs/BANKING_PRD_TECHNICAL_REQUIREMENTS.md`: UX and security requirements that apply to every feature
+- `docs/BUILD_PLAN.md`: phases, priorities, cut order, risks and decisions
+- `docs/TECHNICAL_REQUIREMENTS.md`: numbered requirements (FR, SEC, UX, PERF, REL) to cite in tasks and tests
 - Skills in `.claude/skills/` (load the matching one before working):
 
 **Product and design**

@@ -7,7 +7,9 @@ This folder is set up for building the MVP with Claude Code. The app itself has 
 ## What's here
 
 - `CLAUDE.md`: project context and working rules Claude Code reads automatically
-- `docs/`: PRD summary, the epics and features, and the banking UX and security requirements (`BANKING_PRD_TECHNICAL_REQUIREMENTS.md`)
+- `docs/`: PRD summary, the epics and features, the banking UX and security requirements (`BANKING_PRD_TECHNICAL_REQUIREMENTS.md`), and two plain-language documents for stakeholders and designers:
+  - [`BUILD_PLAN.md`](docs/BUILD_PLAN.md): the MVP build plan (phases and timeline, feature priorities, design schedule, roles, pre-mortem risks, decisions needed)
+  - [`TECHNICAL_REQUIREMENTS.md`](docs/TECHNICAL_REQUIREMENTS.md): the technical requirements document (system overview, technology choices, numbered requirements, data, testing, release)
 - `.claude/skills/`: skills Claude Code loads while building
 
 | Skill | Purpose | Source |
