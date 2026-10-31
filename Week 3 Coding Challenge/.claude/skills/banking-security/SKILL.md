@@ -23,7 +23,8 @@ Baseline: `docs/BANKING_PRD_TECHNICAL_REQUIREMENTS.md`. These controls are **req
 
 ## 3. Privacy masking
 
-- Listen to `AppState`. On `inactive` or `background`, render a full-screen `BlurView` from `expo-blur` (with a solid fallback color) over the app so balances are hidden in the app switcher. Remove it on `active`.
+- Listen to `AppState`. On `inactive` or `background`, render a full-screen `BlurView` from `expo-blur` (with a solid fallback color) over the app so balances are hidden in the app switcher. Keep it up through a phone lock and wake, and fade it out only once the app is `active` again (instant removal with reduced motion).
+- Account numbers: store and use Plaid's `account_id` tokens, never full account numbers; display only the last 4 digits ("Checking ••1234").
 - The home-screen widget and notifications must not show amounts by default (widget shows "Tap to view"; see `reminders-and-notifications`). Showing amounts is an explicit opt-in in settings, with a plain-language warning.
 
 ## 4. Runtime defenses
@@ -49,6 +50,7 @@ Baseline: `docs/BANKING_PRD_TECHNICAL_REQUIREMENTS.md`. These controls are **req
 
 - **Unhappy paths first:** write the error, offline, timeout and invalid-input handling (and their tests) before the success path.
 - Before finishing any change, check it against sections 1 to 6 and say which controls it touches.
+- At every phase gate, a person runs the four manual checks in `docs/TECHNICAL_REQUIREMENTS.md` on a real phone: blur in the app switcher, blur on wake, triple-tap Confirm saves once, walk-away lock at 5 minutes.
 
 ## Review checklist
 

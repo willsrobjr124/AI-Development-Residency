@@ -83,7 +83,8 @@ The **security foundation** is not scored: it is required before anything else s
 
 - **Bank linking scores lowest** because it is the most work and depends on an outside company (Plaid). Manual mode tests the core idea without it, so it is built last.
 - **The widget** fights "out of sight, out of mind", but needs separate iPhone and Android work plus privacy masking, so it comes late.
-- **Visual buckets score in the middle** but are built early, together with safe-to-spend, because they display the same numbers and set the home screen design.
+- **Visual buckets score in the middle** but are built early, together with safe-to-spend, because they display the same numbers and set the home screen design. A separate Savings bucket matters: adults with ADHD symptoms save less (Bangma et al., 2020).
+- **Fun money costs almost nothing to add.** The "fun" starter category gets an optional planned amount, so spending on a whim stays guilt-free instead of feeling like failure (NeuroLaunch, 2025). It ships with the default categories in Phase 3, and no points or rewards are attached to it (Spiel et al., 2022).
 
 ### If we fall behind, cut in this order
 
@@ -173,7 +174,7 @@ We sort each answer into three kinds:
 | # | Risk | Why we think it is real | Urgency | What we do about it |
 |---|---|---|---|---|
 | T1 | Too much scope for the time | The full scope needs about 14 weeks; the PRD hoped for a beta in months 2 to 4 | **Launch-blocking** | Agree the cut order now and check it at every gate |
-| T2 | Not enough testers with ADHD | We need about 100 active testers and have no waitlist yet | **Launch-blocking** | Start recruiting in week 6; aim for 150 sign-ups |
+| T2 | Not enough testers with ADHD | We need about 100 active testers and have no waitlist yet | **Launch-blocking** | Start recruiting in week 6; aim for 150 sign-ups, about half of them women (past ADHD technology studies were about 75% male: Spiel et al., 2022) |
 | T3 | Security work slows the team | Encryption, biometrics and test builds are new to the team | **Launch-blocking** | Build it first, as its own phase, with a ready-made checklist; flag any overrun at the week 4 gate |
 | T4 | App store review delays the beta | Finance apps get extra privacy checks before external testing | **Launch-blocking** | Prepare privacy labels, a delete-my-data option and a reviewer test account by week 13 |
 | T5 | The 5-minute lock annoys people | Security asks for it; ADHD design asks for speed | Fast-follow | Fast face unlock that returns people to the exact screen; watch complaints in the alpha |
@@ -194,13 +195,14 @@ We sort each answer into three kinds:
 - **Who runs the app after the course?** Real people's data needs ongoing care, support and hosting costs. *Check:* decide before inviting testers.
 - **Is the name final?** "FocusFinance" is not confirmed. *Check:* decide and check the name is free before store listings.
 - **Who exactly is it for?** Should autistic adults and other neurodivergent people be included? *Check:* decide before recruiting starts.
+- **Will people keep logging by hand?** Industry writers argue that manual entry makes ADHD users quit quickly, and that automatic bank syncing matters most (NeuroLaunch, 2025). That challenges our manual-mode-first plan. *Check:* in the alpha, track how many days a week each tester logs; if logging drops off, move bank linking earlier.
 
 ### Action plans for launch-blocking risks
 
 | Risk | Action | Owner | Due |
 |---|---|---|---|
 | T1 Scope | Agree phase gates and the cut order with the instructor | Product manager | Week 1 |
-| T2 Testers | Open a waitlist; post in 3 ADHD communities; reach 150 sign-ups | Product manager | Start week 6, done week 12 |
+| T2 Testers | Open a waitlist; post in 3 ADHD communities; reach 150 sign-ups with a balanced gender mix | Product manager | Start week 6, done week 12 |
 | T3 Security | Finish the Phase 1 security checklist before any feature work | Mobile developer | Week 4 |
 | T4 Store review | Privacy labels, delete-my-data, reviewer account, submit beta build | Product manager and developer | Week 13 |
 
@@ -228,3 +230,22 @@ A phase is finished only when all of these are true. We show them in a short dem
 - [ ] The phase's gate (in the timeline table) is met.
 
 The full engineering detail behind each item is in the [Technical Requirements Document](TECHNICAL_REQUIREMENTS.md).
+
+## Sources
+
+**Research**
+
+- Bangma, D. F., Tucha, L., Fuermaier, A. B. M., Tucha, O., & Koerts, J. (2020). [Financial decision-making in a community sample of adults with and without current symptoms of ADHD](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0239343). *PLOS ONE*, 15(10), e0239343.
+- Spiel, K., Hornecker, E., Williams, R. M., & Good, J. (2022). [ADHD and technology research: Investigated by neurodivergent readers](https://dl.acm.org/doi/10.1145/3491102.3517592). *CHI '22: Proceedings of the CHI Conference on Human Factors in Computing Systems*. ACM.
+
+**Design guides**
+
+- Accessibility Checker (2026). [The principles of neurodivergent UX design](https://www.accessibilitychecker.org/blog/neurodivergent-ux-design/).
+- Design Monks (2026). [UI/UX and ADHD](https://www.designmonks.co/blog/ui-ux-and-adhd).
+- Din Studio (2025). [UI/UX for ADHD](https://din-studio.com/ui-ux-for-adhd-designing-interfaces-that-actually-help-students/).
+- iFactory (2025). [From barrier to gateway](https://www.ifactory.com/insights/from-barrier-to-gateway-designing-higher-ed-ux-for-neurodivergent-students/).
+- UXPA (2025). [Designing for ADHD in UX](https://uxpa.org/designing-for-adhd-in-ux/).
+
+**Industry article** (opinion, not research; it contains affiliate links)
+
+- NeuroLaunch (2025, updated 2026). [Best budget app for ADHD](https://neurolaunch.com/best-budget-app-for-adhd/).

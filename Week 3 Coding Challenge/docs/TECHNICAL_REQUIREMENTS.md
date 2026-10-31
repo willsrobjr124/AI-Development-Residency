@@ -99,7 +99,7 @@ What each feature **must** do. "Done when" is how testers and stakeholders check
 | Display preferences (theme, reduced motion) | Simple phone storage | Not sensitive, so no encryption needed |
 | Usage events | Analytics | Event names only ("finished setup"); never amounts, merchants or balances |
 
-**We never store:** bank passwords (Plaid handles them), card numbers or government ID numbers.
+**We never store:** bank passwords (Plaid handles them), full account or card numbers, or government ID numbers.
 
 **Rules for every developer:**
 
@@ -117,15 +117,16 @@ All of these are **must** for the beta. The security foundation is built first (
 | SEC-02 | No financial or personal data in simple storage (AsyncStorage), logs, web addresses or notification contents | Sensitive data lives in one protected place only |
 | SEC-03 | Unlock with Face ID or fingerprint, with the phone passcode as a fallback | Only the owner opens the app; nobody gets stuck |
 | SEC-04 | Lock after 5 minutes without use; clear sensitive data from memory; return to the same screen after unlock | A phone left on a table is safe, and nothing is lost |
-| SEC-05 | Cover the screen with a blur when the app goes to the background | Amounts do not show in the app switcher |
+| SEC-05 | Drop a blur over the screen the moment the app becomes inactive or goes to the background; keep it up until the person is back in the app, then fade it out (instantly with reduced motion) | Amounts never show in the app switcher, after waking the phone, or to someone looking over a shoulder |
 | SEC-06 | Block rooted or jailbroken phones with a calm explanation screen | Phones with removed protections cannot keep data safe |
 | SEC-07 | HTTPS only; TLS 1.3 on our servers; certificate pinning with a backup pin | Nobody can listen in or pretend to be our server |
 | SEC-08 | No `console` logging in release builds; code shrinking and obfuscation (R8, Hermes) | The released app gives away as little as possible |
-| SEC-09 | Every save that changes money carries a unique key (`X-Idempotency-Key`) | A double tap or a retried save counts only once |
+| SEC-09 | Every save that changes money carries a unique key (`X-Idempotency-Key`) | A double tap, a triple tap or a retried save counts only once; the button ignores extra taps until the save finishes |
 | SEC-10 | Saves that change several things happen in one transaction that rolls back on failure | Money is never half-moved |
 | SEC-11 | No secrets in the app or the repository; the Plaid secret lives only on the server | Keys cannot be copied out of the app |
 | SEC-12 | Row-level security on every cloud table | Each person can reach only their own data |
 | SEC-13 | Widget, notifications and app switcher show no amounts unless the person opts in | Money stays private on a lock screen or a shared desk |
+| SEC-14 | Never store or show full account numbers: keep Plaid's account tokens and show only the last 4 digits | A screenshot or a stolen copy reveals no usable account details |
 
 ## Design, accessibility and wording requirements
 
@@ -134,7 +135,7 @@ Our users find planning, memory and focus hard, and money needs all three. These
 | ID | Requirement | Why |
 |---|---|---|
 | UX-01 | Every screen that loads or saves data is designed in four states: Initial, Loading, Success and Error | Nobody is left staring at a blank or broken screen |
-| UX-02 | One decision per screen; secondary details appear on tap | Fewer choices means less overwhelm |
+| UX-02 | One decision per screen; secondary totals and details stay hidden until tapped, never combined into one busy feed | Fewer choices means less overwhelm |
 | UX-03 | Body text at least 16 point, Atkinson Hyperlegible or Lato, line height about 1.5; helper text never italic | Easy to read when attention is low |
 | UX-04 | Contrast at least WCAG AA (4.5 to 1); light and dark mode | Readable for everyone, in any light |
 | UX-05 | Touch targets at least 44 × 44 point | Easy to hit when rushing |
@@ -145,6 +146,8 @@ Our users find planning, memory and focus hard, and money needs all three. These
 | UX-10 | Every control has a screen-reader label; amounts are read as words ("120 dollars") | Works with VoiceOver and TalkBack |
 | UX-11 | Respects the phone's text size up to the largest setting | Nothing is cut off for people who need big text |
 | UX-12 | No pop-ups in the middle of a task; buttons say what they do ("Add expense", not "Next") | Keeps people moving |
+| UX-13 | Loading shows calm, low-contrast skeleton placeholders that pulse slowly (about once a second), never fast spinners; the placeholders stay still with reduced motion | Waiting does not add visual stress |
+| UX-14 | Errors use soft sage or blue, plain words and one next step, and say the person's money is safe; never error codes, capitals or red blocks | A problem feels fixable, not alarming |
 
 | Instead of | We write |
 |---|---|
@@ -209,8 +212,17 @@ We test what could go wrong **before** we test the happy path: no internet, a ti
 | Automatic checks (CI) | Type check, lint (fails on any leftover `console` log) and all tests pass on GitHub | Every push |
 | Accessibility check | Screen reader, largest text size and reduced motion all work through setup, safe-to-spend, quick add and undo | Each phase |
 | Real-phone check | Works on an actual iPhone and Android phone | Each phase |
-| Security review | The full security checklist (SEC-01 to SEC-13) | Phases 1 and 6 |
+| Security review | The full security checklist (SEC-01 to SEC-14) and the manual checks below | Phases 1 and 6 |
 | Beta feedback | In-app feedback, short surveys, crash reports | Throughout the beta |
+
+### Manual security checks at every phase gate
+
+A person runs these four checks on a real phone, because automated tests cannot see what is on screen.
+
+- [ ] **Privacy blur in the app switcher:** with balances showing, swipe up to the app switcher. The blur appears the moment the app shrinks.
+- [ ] **Waking a locked phone:** lock the phone on a balance screen, unlock it and return to the app. The blur shows first and fades only once the person is back in the app.
+- [ ] **Double-tap guard:** move $5 between buckets and tap Confirm three times quickly. Exactly one $5 move is saved.
+- [ ] **Walk-away lock:** leave the app untouched on a balance screen for 5 minutes. It locks, the amounts disappear, and unlocking returns to the same screen.
 
 ## Environments and release
 

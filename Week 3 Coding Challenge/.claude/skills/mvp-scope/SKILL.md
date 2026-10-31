@@ -20,7 +20,7 @@ Goal: about 100 beta testers, months 2 to 4. Full context: `docs/PRD-summary.md`
 | 1. Easy Start | Goal picker | User picks 1 of 3 goals; the home screen order follows the goal |
 | 1. Easy Start | Optional bank linking | User can skip linking and type a balance; linking can happen later from settings |
 | 1. Easy Start | Bill detection | Likely recurring bills are listed; user confirms or removes each with one tap |
-| 1. Easy Start | Default categories | 5 starter categories (bills, food, fun, transport, other); none required during setup |
+| 1. Easy Start | Default categories | 5 starter categories (bills, food, fun, transport, other); none required during setup. "Fun" can hold an optional planned amount (fun money) so whim spending stays guilt-free; no points or rewards attached |
 | 1. Easy Start | Step progress and autosave | Each step shows "Step N of 4"; quitting and reopening resumes at the same step |
 | 2. Money at a Glance | Safe-to-spend number | First thing on home; tap shows the breakdown (see `safe-to-spend-math` skill) |
 | 2. Money at a Glance | Visual buckets | Money shown as three buckets (Spending = safe-to-spend, Bills, Savings) that fill and empty; tap a bucket to see detail or move money between Spending and Savings (see `safe-to-spend-math`) |
