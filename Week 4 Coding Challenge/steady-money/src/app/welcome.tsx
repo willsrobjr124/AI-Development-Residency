@@ -1,8 +1,7 @@
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
-import { AppText, Heading, PrimaryButton, Screen, Spacer } from '@/components/ui';
-import { useMoney } from '@/hooks/use-money';
+import { AppText, Heading, PrimaryButton, Screen, Spacer, TextButton } from '@/components/ui';
 import { radius, space, useColors } from '@/theme';
 
 function Jar({ level, fill }: { level: number; fill: string }) {
@@ -16,7 +15,6 @@ function Jar({ level, fill }: { level: number; fill: string }) {
 
 export default function Welcome() {
   const colors = useColors();
-  const { saveSetupStep } = useMoney();
 
   return (
     <Screen>
@@ -28,22 +26,20 @@ export default function Welcome() {
       </View>
       <View style={styles.copy}>
         <Heading>See what&apos;s safe to spend, at a glance</Heading>
-        <AppText>Four short steps. You can change anything later.</AppText>
+        <AppText>Make an account, then four short steps. You can change anything later.</AppText>
       </View>
       <Spacer />
-      <PrimaryButton
-        label="Get started"
-        onPress={async () => {
-          await saveSetupStep('balance');
-          router.replace('/setup/balance');
-        }}
-      />
+      <View style={styles.actions}>
+        <PrimaryButton label="Get started" onPress={() => router.push('/sign-up')} />
+        <TextButton label="I already have an account" onPress={() => router.push('/log-in')} />
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   copy: { gap: space.md },
+  actions: { gap: space.sm },
   jars: { flexDirection: 'row', justifyContent: 'center', gap: space.md },
   jar: {
     width: 72,

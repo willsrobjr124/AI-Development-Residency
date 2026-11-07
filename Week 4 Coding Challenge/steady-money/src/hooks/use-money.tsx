@@ -11,15 +11,13 @@ import {
 } from 'react';
 import { AccessibilityInfo, Platform } from 'react-native';
 
-import { openDb } from '@/data/db';
 import * as repo from '@/data/repo';
-import type { Db } from '@/data/schema';
 import { today } from '@/domain/dates';
 import { formatCents } from '@/domain/money';
 import { shouldOfferFreshStart, type MoveTarget } from '@/domain/rules';
 import { calculate, type Bill, type MoneyInputs, type MoneySummary } from '@/domain/safeToSpend';
 
-const SETUP_STEPS = ['welcome', 'balance', 'payday', 'bills', 'savings', 'ready', 'done'] as const;
+const SETUP_STEPS = ['balance', 'payday', 'bills', 'savings', 'ready', 'done'] as const;
 
 export type SetupStep = (typeof SETUP_STEPS)[number];
 
@@ -35,13 +33,11 @@ export type Preferences = {
   bucketHintSeen: boolean;
 };
 
-const PREFERENCE_KEYS: Record<keyof Preferences, string> = {
+const PREFERENCE_COLUMNS = {
   reduceMotion: 'reduce_motion',
   allowScreenshots: 'allow_screenshots',
   bucketHintSeen: 'bucket_hint_seen',
-};
-
-const LAST_OPENED = 'last_opened';
+} as const;
 
 const COULD_NOT_SAVE = "We couldn't save that just now. Your money is safe, so try again.";
 
@@ -69,6 +65,7 @@ type MoneyContext = {
   dismissFreshStart: () => void;
   hideMoney: () => void;
   showMoney: () => Promise<void>;
+  retry: () => void;
 };
 
 const Context = createContext<MoneyContext | null>(null);
@@ -78,10 +75,17 @@ function feedback(reduceMotion: boolean) {
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
 }
 
-export function MoneyProvider({ children }: { children: ReactNode }) {
-  const [db, setDb] = useState<Db | null>(null);
-  const [status, setStatus] = useState<MoneyContext['status']>('loading');
-  const [setupStep, setSetupStep] = useState<SetupStep>('welcome');
+/** Remounted for each person, so one person's money is never left in memory for the next. */
+export function MoneyProvider({
+  signedIn,
+  children,
+}: {
+  signedIn: boolean;
+  children: ReactNode;
+}) {
+  const [status, setStatus] = useState<MoneyContext['status']>(signedIn ? 'loading' : 'ready');
+  const [tries, setTries] = useState(0);
+  const [setupStep, setSetupStep] = useState<SetupStep>('balance');
   const [preferences, setPreferences] = useState<Preferences>({
     reduceMotion: false,
     allowScreenshots: false,
@@ -91,8 +95,8 @@ export function MoneyProvider({ children }: { children: ReactNode }) {
   const [notice, setNoticeState] = useState<Notice | null>(null);
   const [offerFreshStart, setOfferFreshStart] = useState(false);
 
-  const refresh = useCallback(async (from: Db) => {
-    setInputs(await repo.loadMoneyInputs(from, today()));
+  const refresh = useCallback(async () => {
+    setInputs(await repo.loadMoneyInputs(today()));
   }, []);
 
   const setNotice = useCallback((next: Notice) => {
@@ -101,29 +105,23 @@ export function MoneyProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!signedIn) return;
     let active = true;
     (async () => {
       try {
-        const opened = await openDb();
+        const settings = await repo.loadSettings();
         const day = today();
-        const [step, lastOpened, reduceMotion, allowScreenshots, bucketHintSeen] = await Promise.all([
-          repo.getSetupStep(opened),
-          repo.getSetting(opened, LAST_OPENED),
-          repo.getSetting(opened, PREFERENCE_KEYS.reduceMotion),
-          repo.getSetting(opened, PREFERENCE_KEYS.allowScreenshots),
-          repo.getSetting(opened, PREFERENCE_KEYS.bucketHintSeen),
-        ]);
-        await repo.setSetting(opened, LAST_OPENED, day);
-        await refresh(opened);
+        await repo.updateSettings({ last_opened: day });
+        await refresh();
         if (!active) return;
-        setSetupStep(isSetupStep(step) ? step : 'welcome');
+        const step = settings.setup_step;
+        setSetupStep(isSetupStep(step) ? step : 'balance');
         setPreferences({
-          reduceMotion: reduceMotion === 'true',
-          allowScreenshots: allowScreenshots === 'true',
-          bucketHintSeen: bucketHintSeen === 'true',
+          reduceMotion: settings.reduce_motion,
+          allowScreenshots: settings.allow_screenshots,
+          bucketHintSeen: settings.bucket_hint_seen,
         });
-        setOfferFreshStart(step === 'done' && shouldOfferFreshStart(lastOpened, day));
-        setDb(opened);
+        setOfferFreshStart(step === 'done' && shouldOfferFreshStart(settings.last_opened, day));
         setStatus('ready');
       } catch {
         if (active) setStatus('error');
@@ -132,12 +130,12 @@ export function MoneyProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [refresh]);
+  }, [signedIn, refresh, tries]);
 
-  const need = useCallback((): Db => {
-    if (!db) throw new Error('Storage is not ready.');
-    return db;
-  }, [db]);
+  const retry = useCallback(() => {
+    setStatus('loading');
+    setTries((count) => count + 1);
+  }, []);
 
   /** Runs an undo or similar action, and says so calmly if it can't finish. */
   const attempt = useCallback(
@@ -155,174 +153,165 @@ export function MoneyProvider({ children }: { children: ReactNode }) {
 
   const saveSetupStep = useCallback(
     async (step: SetupStep) => {
-      await repo.setSetupStep(need(), step);
+      await repo.updateSettings({ setup_step: step });
       setSetupStep(step);
     },
-    [need],
+    [],
   );
 
   const setPreference = useCallback(
     async (key: keyof Preferences, value: boolean) => {
-      await repo.setSetting(need(), PREFERENCE_KEYS[key], String(value));
+      await repo.updateSettings({ [PREFERENCE_COLUMNS[key]]: value });
       setPreferences((current) => ({ ...current, [key]: value }));
     },
-    [need],
+    [],
   );
 
   const addExpense = useCallback(
     async (amountCents: number, category: string | null) => {
-      const store = need();
       const id = randomUUID();
-      await repo.addExpense(store, { id, amountCents, category });
-      await refresh(store);
+      await repo.addExpense({ id, amountCents, category });
+      await refresh();
       feedback(preferences.reduceMotion);
       setNotice({
         message: `${formatCents(amountCents)} added${category ? ` to ${category}` : ''}`,
         actionLabel: 'Undo',
         action: attempt(async () => {
-          await repo.removeExpense(store, id);
-          await refresh(store);
+          await repo.removeExpense(id);
+          await refresh();
           setNotice({ message: 'Removed. Your number is back.' });
         }),
       });
     },
-    [attempt, need, preferences.reduceMotion, refresh, setNotice],
+    [attempt, preferences.reduceMotion, refresh, setNotice],
   );
 
   const removeExpense = useCallback(
     async (id: string) => {
-      const store = need();
-      await repo.removeExpense(store, id);
-      await refresh(store);
+      await repo.removeExpense(id);
+      await refresh();
       setNotice({
         message: 'Expense removed',
         actionLabel: 'Undo',
         action: attempt(async () => {
-          await repo.restoreExpense(store, id);
-          await refresh(store);
+          await repo.restoreExpense(id);
+          await refresh();
           setNotice({ message: 'Expense is back.' });
         }),
       });
     },
-    [attempt, need, refresh, setNotice],
+    [attempt, refresh, setNotice],
   );
 
-  const listRecent = useCallback(() => repo.listRecentExpenses(need()), [need]);
+  const listRecent = useCallback(() => repo.listRecentExpenses(), []);
 
   const moveMoney = useCallback(
     async (to: MoveTarget, amountCents: number) => {
-      const store = need();
       const id = randomUUID();
-      await repo.moveSavings(store, {
+      await repo.moveSavings({
         id,
         amountCents: to === 'savings' ? amountCents : -amountCents,
       });
-      await refresh(store);
+      await refresh();
       feedback(preferences.reduceMotion);
       setNotice({
         message: `${formatCents(amountCents)} moved to ${to === 'savings' ? 'Savings' : 'Spending'}`,
         actionLabel: 'Undo',
         action: attempt(async () => {
-          await repo.undoSavingsMove(store, id);
-          await refresh(store);
+          await repo.undoSavingsMove(id);
+          await refresh();
           setNotice({ message: 'Moved back.' });
         }),
       });
     },
-    [attempt, need, preferences.reduceMotion, refresh, setNotice],
+    [attempt, preferences.reduceMotion, refresh, setNotice],
   );
 
   const addBill = useCallback<MoneyContext['addBill']>(
     async (bill) => {
-      const store = need();
       const id = randomUUID();
-      await repo.addBill(store, { ...bill, id });
-      await refresh(store);
+      await repo.addBill({ ...bill, id });
+      await refresh();
       setNotice({
         message: `${bill.name} added to your bills`,
         actionLabel: 'Undo',
         action: attempt(async () => {
-          await repo.removeBill(store, id);
-          await refresh(store);
+          await repo.removeBill(id);
+          await refresh();
           setNotice({ message: `${bill.name} removed.` });
         }),
       });
     },
-    [attempt, need, refresh, setNotice],
+    [attempt, refresh, setNotice],
   );
 
   const markBillPaid = useCallback(
     async (bill: Bill) => {
-      const store = need();
       const id = randomUUID();
       try {
-        await repo.markBillPaid(store, { id, billId: bill.id });
+        await repo.markBillPaid({ id, billId: bill.id });
       } catch {
         setNotice({ message: COULD_NOT_SAVE });
         return;
       }
-      await refresh(store);
+      await refresh();
       feedback(preferences.reduceMotion);
       setNotice({
         message: `${bill.name} bill marked paid`,
         actionLabel: 'Undo',
         action: attempt(async () => {
-          await repo.undoBillPaid(store, id);
-          await refresh(store);
+          await repo.undoBillPaid(id);
+          await refresh();
           setNotice({ message: `${bill.name} bill is back on your list.` });
         }),
       });
     },
-    [attempt, need, preferences.reduceMotion, refresh, setNotice],
+    [attempt, preferences.reduceMotion, refresh, setNotice],
   );
 
   const saveBalance = useCallback(
     async (cents: number) => {
-      const store = need();
-      await repo.setBalance(store, cents);
-      await refresh(store);
+      await repo.setBalance(cents);
+      await refresh();
     },
-    [need, refresh],
+    [refresh],
   );
 
   const savePayday = useCallback(
     async (date: string) => {
-      const store = need();
-      await repo.setNextPayday(store, date);
-      await refresh(store);
+      await repo.setNextPayday(date);
+      await refresh();
     },
-    [need, refresh],
+    [refresh],
   );
 
   const saveSavings = useCallback(
     async (cents: number) => {
-      const store = need();
-      const current = (await repo.loadMoneyInputs(store, today())).savingsCents;
+      const current = (await repo.loadMoneyInputs(today())).savingsCents;
       if (cents !== current) {
-        await repo.moveSavings(store, { id: randomUUID(), amountCents: cents - current });
+        await repo.moveSavings({ id: randomUUID(), amountCents: cents - current });
       }
-      await refresh(store);
+      await refresh();
     },
-    [need, refresh],
+    [refresh],
   );
 
   const startFresh = useCallback(
     async (balanceCents: number) => {
-      const store = need();
-      const undo = await repo.freshStart(store, balanceCents);
-      await refresh(store);
+      const undo = await repo.freshStart(balanceCents);
+      await refresh();
       setOfferFreshStart(false);
       setNotice({
         message: 'Your balance is up to date',
         actionLabel: 'Undo',
         action: attempt(async () => {
-          await repo.undoFreshStart(store, undo);
-          await refresh(store);
+          await repo.undoFreshStart(undo);
+          await refresh();
           setNotice({ message: 'Back to how it was.' });
         }),
       });
     },
-    [attempt, need, refresh, setNotice],
+    [attempt, refresh, setNotice],
   );
 
   const dismissFreshStart = useCallback(() => setOfferFreshStart(false), []);
@@ -334,8 +323,8 @@ export function MoneyProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const showMoney = useCallback(async () => {
-    await refresh(need());
-  }, [need, refresh]);
+    await refresh();
+  }, [refresh]);
 
   const value = useMemo<MoneyContext>(
     () => ({
@@ -362,6 +351,7 @@ export function MoneyProvider({ children }: { children: ReactNode }) {
       dismissFreshStart,
       hideMoney,
       showMoney,
+      retry,
     }),
     [
       status,
@@ -386,6 +376,7 @@ export function MoneyProvider({ children }: { children: ReactNode }) {
       dismissFreshStart,
       hideMoney,
       showMoney,
+      retry,
     ],
   );
 

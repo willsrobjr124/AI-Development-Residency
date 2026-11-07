@@ -10,22 +10,57 @@ import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { PrivacyGate } from '@/components/privacy-gate';
-import { AppText, Heading } from '@/components/ui';
+import { AppText, Heading, PrimaryButton } from '@/components/ui';
+import { AuthProvider, useAuth } from '@/hooks/use-auth';
 import { MoneyProvider, useMoney } from '@/hooks/use-money';
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
 import { size, useColors } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
 
+const SIGNED_OUT_SCREENS = [
+  'welcome',
+  'sign-up',
+  'verify-email',
+  'log-in',
+  'forgot-password',
+  'new-password',
+];
+
+const SIGNED_IN_SCREENS = [
+  'breakdown',
+  'move-money',
+  'bills',
+  'add-bill',
+  'recent',
+  'settings',
+  'account',
+  'log-out',
+  'delete-account',
+  'edit-balance',
+  'edit-payday',
+  'edit-savings',
+  'fresh-start',
+  'fresh-start-balance',
+  'fresh-start-done',
+  'setup/balance',
+  'setup/payday',
+  'setup/bills',
+  'setup/savings',
+  'setup/ready',
+];
+
 function Navigator() {
   const colors = useColors();
   const reduced = useReducedMotion();
-  const { status } = useMoney();
+  const { ready: authReady, session } = useAuth();
+  const { status, retry } = useMoney();
   const [fontsLoaded, fontError] = useFonts({
     AtkinsonHyperlegible_400Regular,
     AtkinsonHyperlegible_700Bold,
   });
-  const ready = (fontsLoaded || fontError !== null) && status !== 'loading';
+  const ready = (fontsLoaded || fontError !== null) && authReady && status !== 'loading';
+  const signedIn = session !== null;
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();
@@ -37,7 +72,8 @@ function Navigator() {
     return (
       <View style={[styles.error, { backgroundColor: colors.background }]}>
         <Heading>We couldn&apos;t open your budget just now</Heading>
-        <AppText>Your money is safe. Close the app and open it again.</AppText>
+        <AppText>Your money is safe. Check your connection and try again.</AppText>
+        <PrimaryButton label="Try again" onPress={retry} />
       </View>
     );
   }
@@ -53,21 +89,41 @@ function Navigator() {
           ...none,
         }}>
         <Stack.Screen name="index" options={{ animation: reduced ? 'none' : 'fade' }} />
-        <Stack.Screen
-          name="add-expense"
-          options={{ animation: reduced ? 'none' : 'slide_from_bottom' }}
-        />
+        <Stack.Protected guard={signedIn}>
+          <Stack.Screen
+            name="add-expense"
+            options={{ animation: reduced ? 'none' : 'slide_from_bottom' }}
+          />
+          {SIGNED_IN_SCREENS.map((name) => (
+            <Stack.Screen key={name} name={name} />
+          ))}
+        </Stack.Protected>
+        <Stack.Protected guard={!signedIn}>
+          {SIGNED_OUT_SCREENS.map((name) => (
+            <Stack.Screen key={name} name={name} />
+          ))}
+        </Stack.Protected>
       </Stack>
     </PrivacyGate>
   );
 }
 
-export default function RootLayout() {
+function Money() {
+  const { session } = useAuth();
+  const userId = session?.user.id ?? 'signed-out';
   return (
-    <MoneyProvider>
+    <MoneyProvider key={userId} signedIn={session !== null}>
       <StatusBar style="auto" />
       <Navigator />
     </MoneyProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <Money />
+    </AuthProvider>
   );
 }
 

@@ -23,13 +23,13 @@ export const COULD_NOT_SAVE = "We couldn't save that just now. Your money is saf
 /** Keeps a slow save from running twice if the button is tapped again. */
 export function useSaveOnce() {
   const saving = useRef(false);
-  return async (task: () => Promise<void>, onError: () => void) => {
+  return async (task: () => Promise<void>, onError: (error: unknown) => void) => {
     if (saving.current) return;
     saving.current = true;
     try {
       await task();
-    } catch {
-      onError();
+    } catch (error) {
+      onError(error);
     } finally {
       saving.current = false;
     }

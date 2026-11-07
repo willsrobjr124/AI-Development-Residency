@@ -318,6 +318,58 @@ export function Field({
   );
 }
 
+export function PasswordField({
+  label,
+  value,
+  error,
+  onChange,
+  isNew = false,
+}: {
+  label: string;
+  value: string;
+  error?: string | null;
+  onChange: (text: string) => void;
+  isNew?: boolean;
+}) {
+  const colors = useColors();
+  const [shown, setShown] = useState(false);
+  return (
+    <View style={styles.fieldGroup}>
+      <View
+        style={[styles.field, { borderBottomColor: colors.text, borderBottomWidth: error ? 4 : 2 }]}>
+        <AppText importantForAccessibility="no" accessibilityElementsHidden>
+          {label}
+        </AppText>
+        <View style={styles.passwordRow}>
+          <TextInput
+            accessibilityLabel={label}
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete={isNew ? 'new-password' : 'current-password'}
+            textContentType={isNew ? 'newPassword' : 'password'}
+            secureTextEntry={!shown}
+            value={value}
+            onChangeText={onChange}
+            style={[type.bodyBold, styles.fieldInput, styles.passwordInput, { color: colors.text }]}
+          />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={shown ? 'Hide password' : 'Show password'}
+            onPress={() => setShown(!shown)}
+            style={styles.showPassword}>
+            <AppText variant="bodyBold">{shown ? 'Hide' : 'Show'}</AppText>
+          </Pressable>
+        </View>
+      </View>
+      {error ? (
+        <AppText variant="bodyBold" accessibilityLiveRegion="polite">
+          {error}
+        </AppText>
+      ) : null}
+    </View>
+  );
+}
+
 export function MoneyField({
   label,
   value,
@@ -508,6 +560,14 @@ const styles = StyleSheet.create({
   fieldGroup: { gap: space.sm },
   field: { paddingBottom: space.sm, gap: 2 },
   fieldInput: { padding: 0, minHeight: 26 },
+  passwordRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  passwordInput: { flex: 1, minWidth: 0 },
+  showPassword: {
+    minHeight: size.minTarget,
+    minWidth: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   moneyField: { flexDirection: 'row', alignItems: 'center', paddingBottom: space.sm },
   moneyInput: { flex: 1, padding: 0, minWidth: 0 },
   progress: { gap: 10 },

@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { MoneyFormScreen } from '@/components/forms';
-import { BackLink, StepProgress } from '@/components/ui';
+import { StepProgress } from '@/components/ui';
 import { useMoney } from '@/hooks/use-money';
 import { space } from '@/theme';
 
@@ -13,12 +13,6 @@ export default function SetupBalance() {
     <MoneyFormScreen
       top={
         <View style={styles.top}>
-          <BackLink
-            onPress={async () => {
-              await saveSetupStep('welcome');
-              router.replace('/setup/welcome');
-            }}
-          />
           <StepProgress step={1} />
         </View>
       }

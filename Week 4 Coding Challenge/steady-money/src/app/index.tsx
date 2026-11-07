@@ -8,6 +8,7 @@ import { AppText, Confirmation, PrimaryButton, Row, Screen, Spacer } from '@/com
 import { untilLabel } from '@/domain/dates';
 import { formatCents, spokenCents } from '@/domain/money';
 import { nextBillLine, paydayHasPassed } from '@/domain/safeToSpend';
+import { useAuth } from '@/hooks/use-auth';
 import { useMoney } from '@/hooks/use-money';
 import { size, space, useColors } from '@/theme';
 
@@ -16,12 +17,14 @@ const NUMBER_MAX_SCALE = 1.3;
 
 export default function Home() {
   const colors = useColors();
+  const { session } = useAuth();
   const { inputs, summary, notice, clearNotice, setupStep, offerFreshStart, preferences } =
     useMoney();
 
   // A confirmation belongs to this screen, so it goes when the person leaves.
   useFocusEffect(useCallback(() => clearNotice, [clearNotice]));
 
+  if (!session) return <Redirect href="/welcome" />;
   if (setupStep !== 'done') return <Redirect href={`/setup/${setupStep}` as Href} />;
   if (offerFreshStart) return <Redirect href="/fresh-start" />;
   if (!inputs || !summary) return null;

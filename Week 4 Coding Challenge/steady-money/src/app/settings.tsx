@@ -18,6 +18,7 @@ export default function Settings() {
       <Heading>Settings</Heading>
 
       <View>
+        <Row title="Account" onPress={() => router.push('/account')} />
         <Row
           title="Balance"
           detail={formatCents(summary.availableCents)}
