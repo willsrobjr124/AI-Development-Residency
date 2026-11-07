@@ -2,7 +2,7 @@
 
 **Challenge:** build an MVP of the ADHD budgeting app, with a focus on UI and UX design.
 
-- `steady-money/`: the Expo app (working folder name)
+- `ADHDbudget-App/`: the Expo app, called ADHD Financial App
 - `CLAUDE.md`: what Claude Code reads first, including which design skill wins when skills disagree
 - `.claude/skills/`: 27 skills (5 new design skills plus the 22 from Week 3)
 - [`skills-lock.json`](skills-lock.json): the exact source and version (hash) of each installed skill

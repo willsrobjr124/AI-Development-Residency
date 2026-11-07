@@ -100,7 +100,7 @@ Updated November 7, 2026, after the first round of Figma fixes. The file now has
 
 **A2. The app is locked to portrait.** WCAG 1.3.4. All screens. In scope.
 
-- **What's wrong:** `steady-money/app.json` line 6 sets `"orientation": "portrait"`, and no landscape layout is drawn. A budgeting app doesn't need portrait to work. People with a phone mounted on a wheelchair may not be able to rotate it. This looks like the starter template's value.
+- **What's wrong:** `ADHDbudget-App/app.json` line 6 sets `"orientation": "portrait"`, and no landscape layout is drawn. A budgeting app doesn't need portrait to work. People with a phone mounted on a wheelchair may not be able to rotate it. This looks like the starter template's value.
 - **Fix:** set it to `"default"`. It's a one-line change, but landscape then relies on the same scrolling as A1, at only about 375pt tall.
 
 ### Serious

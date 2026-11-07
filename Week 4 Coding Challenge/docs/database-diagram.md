@@ -2,7 +2,7 @@
 
 The ADHD Financial App stores its data in Supabase (Postgres). Every table is locked with row-level security, so each person can reach only their own rows. Money is stored as whole cents.
 
-The SQL that builds this database is in [`steady-money/supabase/migrations`](../steady-money/supabase/migrations).
+The SQL that builds this database is in [`ADHDbudget-App/supabase/migrations`](../ADHDbudget-App/supabase/migrations).
 
 ```mermaid
 erDiagram
