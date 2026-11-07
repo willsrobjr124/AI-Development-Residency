@@ -1,0 +1,2 @@
+# Links this folder to the Supabase project. Sign-in settings stay in the Supabase dashboard.
+project_id = "adhd-financial-app"
