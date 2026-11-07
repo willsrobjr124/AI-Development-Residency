@@ -9,7 +9,7 @@ The app must be live at a public address that visitors anywhere can open. App st
 
 ## Decision
 
-Publish Expo's web export on Vercel at a free `vercel.app` address, deploying from GitHub. Settings live in `steady-money/vercel.json`. An Android install link is a second, separate way to share the app.
+Publish Expo's web export on Vercel at a free `vercel.app` address, deploying from GitHub. Settings live in `ADHDbudget-App/vercel.json`. An Android install link is a second, separate way to share the app.
 
 ## Consequences
 

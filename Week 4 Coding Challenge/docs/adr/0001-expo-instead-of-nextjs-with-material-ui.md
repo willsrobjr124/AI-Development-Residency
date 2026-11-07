@@ -9,7 +9,7 @@ The MVP #1 requirements ask for a Next.js app that uses the Material UI design s
 
 ## Decision
 
-Keep the Expo app (React Native, TypeScript, Expo Router) and its own design system in `steady-money/src/theme.ts`. Do not rebuild it in Next.js with Material UI. Expo's web export still gives a public website from the same code.
+Keep the Expo app (React Native, TypeScript, Expo Router) and its own design system in `ADHDbudget-App/src/theme.ts`. Do not rebuild it in Next.js with Material UI. Expo's web export still gives a public website from the same code.
 
 ## Consequences
 

@@ -2,7 +2,7 @@
 
 A mobile budgeting app for adults with ADHD. It shows what is safe to spend in one glance and welcomes users back after any break without guilt. This week we **build the MVP**, with a focus on **UI and UX design**.
 
-- **App code:** `steady-money/` (Expo, TypeScript, Expo Router; routes in `steady-money/src/app/`). "steady-money" is a working folder name, not the product name.
+- **App code:** `ADHDbudget-App/` (Expo, TypeScript, Expo Router; routes in `ADHDbudget-App/src/app/`). The product name is "ADHD Financial App".
 - **Product docs:** `../Week 3 Coding Challenge/docs/` (PRD summary, epics and features, build plan, technical requirements, banking requirements).
 - **Backlog:** the Notion board "Product Backlog: ADHD Budgeting App" holds every story with its acceptance criteria.
 
@@ -22,11 +22,11 @@ Core Must-haves, all typed in by hand (no bank link):
 
 ## Design workflow
 
-Run these in order for each feature. Design files live in `steady-money/.design/<feature-slug>/`.
+Run these in order for each feature. Design files live in `ADHDbudget-App/.design/<feature-slug>/`.
 
 1. `design-brief`: interview, then write `DESIGN_BRIEF.md`
 2. `information-architecture`: screens, navigation, flows and the words we use
-3. `design-tokens` + `expo-design-system`: tokens in `steady-money/src/theme.ts`, reusable components in `src/components/`
+3. `design-tokens` + `expo-design-system`: tokens in `ADHDbudget-App/src/theme.ts`, reusable components in `src/components/`
 4. Build the screen
 5. `design-review`: screenshots at phone width (375) in the browser preview, then `DESIGN_REVIEW.md`
 
@@ -59,4 +59,4 @@ Our research-based rules come first. In order of priority:
 - No `console.*` in app code. Never log or send money details anywhere.
 - The app gives budgeting tools only, never financial advice.
 - Write unhappy-path tests before the happy path. Run lint and typecheck before calling work done.
-- Follow `steady-money/AGENTS.md` for Expo specifics: use `npx expo install` for packages and check the versioned Expo docs, not memory.
+- Follow `ADHDbudget-App/AGENTS.md` for Expo specifics: use `npx expo install` for packages and check the versioned Expo docs, not memory.
