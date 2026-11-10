@@ -1,8 +1,3 @@
-import {
-  AtkinsonHyperlegible_400Regular,
-  AtkinsonHyperlegible_700Bold,
-  useFonts,
-} from '@expo-google-fonts/atkinson-hyperlegible';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -55,11 +50,7 @@ function Navigator() {
   const reduced = useReducedMotion();
   const { ready: authReady, session } = useAuth();
   const { status, retry } = useMoney();
-  const [fontsLoaded, fontError] = useFonts({
-    AtkinsonHyperlegible_400Regular,
-    AtkinsonHyperlegible_700Bold,
-  });
-  const ready = (fontsLoaded || fontError !== null) && authReady && status !== 'loading';
+  const ready = authReady && status !== 'loading';
   const signedIn = session !== null;
 
   useEffect(() => {
@@ -72,7 +63,7 @@ function Navigator() {
     return (
       <View style={[styles.error, { backgroundColor: colors.background }]}>
         <Heading>We couldn&apos;t open your budget just now</Heading>
-        <AppText>Your money is safe. Check your connection and try again.</AppText>
+        <AppText muted>Your money is safe. Check your connection and try again.</AppText>
         <PrimaryButton label="Try again" onPress={retry} />
       </View>
     );

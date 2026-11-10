@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { cubicBezier } from 'react-native-reanimated';
 
-import { AppText, Row } from '@/components/ui';
+import { AppText, ListGroup, Row } from '@/components/ui';
 import { formatCents, spokenCents } from '@/domain/money';
 import type { MoneySummary } from '@/domain/safeToSpend';
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
@@ -35,11 +35,11 @@ function Bucket({ bucket, totalCents }: { bucket: BucketInfo; totalCents: number
       accessibilityHint={bucket.hint}
       onPress={bucket.onPress}
       style={({ pressed }) => [styles.bucket, pressed ? styles.pressed : null]}>
-      <View style={[styles.jar, { borderColor: colors.text }]}>
+      <View style={[styles.jar, { borderColor: colors.jarBorder }]}>
         <Animated.View
           style={[
             styles.level,
-            { height, backgroundColor: bucket.fill, borderTopColor: colors.text },
+            { height, backgroundColor: bucket.fill, borderTopColor: colors.jarBorder },
             bucket.name === 'Savings' && height > 0 ? styles.levelEdge : null,
             reduced
               ? null
@@ -52,7 +52,7 @@ function Bucket({ bucket, totalCents }: { bucket: BucketInfo; totalCents: number
         />
       </View>
       <View style={styles.labels}>
-        <AppText>{bucket.name}</AppText>
+        <AppText variant="footnote">{bucket.name}</AppText>
         <AppText variant="bodyBold">{formatCents(bucket.cents, { wholeDollars: true })}</AppText>
       </View>
     </Pressable>
@@ -99,7 +99,7 @@ export function Buckets({
 
   if (fontScale > size.stackBucketsAt) {
     return (
-      <View>
+      <ListGroup>
         {buckets.map((bucket) => (
           <Row
             key={bucket.name}
@@ -109,7 +109,7 @@ export function Buckets({
             onPress={bucket.onPress}
           />
         ))}
-      </View>
+      </ListGroup>
     );
   }
 

@@ -40,7 +40,7 @@ export default function ForgotPassword() {
       <BackLink onPress={() => router.back()} />
       <View style={styles.copy}>
         <Heading>Reset your password</Heading>
-        <AppText>We&apos;ll send a code to your email.</AppText>
+        <AppText muted>We&apos;ll send a code to your email.</AppText>
       </View>
       <Field
         label="Email"

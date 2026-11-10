@@ -47,9 +47,11 @@ Our research-based rules come first. In order of priority:
 
 ## Brand
 
-- Creative direction: calm minimalism. White is the base on every screen, and anything that doesn't help the current task comes off the screen.
-- Colors: deep blue `#006E93` for text and primary buttons, teal `#008F97` for shapes, icons and large numbers only (it fails contrast for body text), and cream `#F8F2C8` as a small accent only, never a page background. These match the pitch deck.
-- Never use red for money amounts. A low or negative number uses calm wording and the normal text color.
+- Creative direction: calm minimalism in the iOS 26 style (Apple's iOS UI kit, November 2026 redesign in Figma). White is the base on every screen, and anything that doesn't help the current task comes off the screen.
+- Font: the system font (SF Pro on iPhone, Roboto on Android). Text sizes follow the iOS text styles in `src/theme.ts`.
+- Colors live in `src/theme.ts`. Black text with gray secondary text, a blue accent for buttons and links, and gray rounded lists and fields. Two iOS kit colors are darkened to pass WCAG AA: the accent is `#0066CC` (not `#0088FF`) and secondary text is `#6D6D72`.
+- Brand colors stay for the money shapes: deep blue `#006E93` for progress, the check circle and jar outlines, teal `#008F97` for the Spending jar, and cream `#F8F2C8` for the Savings jar only.
+- Errors and destructive actions use plum `#5E2657`. Never use red for money amounts. A low or negative number uses calm wording and the normal text color.
 
 ## Working rules (from Week 3)
 

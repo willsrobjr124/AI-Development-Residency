@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useSaveOnce } from '@/components/forms';
-import { AppText, Heading, PrimaryButton, Screen, Spacer, TextButton } from '@/components/ui';
+import { AppText, ErrorText, Heading, PrimaryButton, Screen, Spacer, TextButton } from '@/components/ui';
 import { authErrorMessage } from '@/domain/auth';
 import { useAuth } from '@/hooks/use-auth';
 import { space } from '@/theme';
@@ -18,16 +18,15 @@ export default function DeleteAccount() {
       <Spacer />
       <View style={styles.copy}>
         <Heading>Delete your account and data?</Heading>
-        <AppText>This removes your account and everything saved in it. It can&apos;t be undone.</AppText>
+        <AppText muted>This removes your account and everything saved in it. It can&apos;t be undone.</AppText>
         {problem ? (
-          <AppText variant="bodyBold" accessibilityLiveRegion="polite">
-            {problem}
-          </AppText>
+          <ErrorText>{problem}</ErrorText>
         ) : null}
       </View>
       <Spacer />
       <View style={styles.actions}>
         <PrimaryButton
+          tone="plum"
           label="Delete everything"
           onPress={() => saveOnce(deleteAccount, (error) => setProblem(authErrorMessage(error)))}
         />

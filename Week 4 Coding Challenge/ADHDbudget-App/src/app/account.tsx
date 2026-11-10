@@ -6,6 +6,7 @@ import {
   BackLink,
   Heading,
   PrimaryButton,
+  ListGroup,
   Row,
   Screen,
   Spacer,
@@ -23,13 +24,16 @@ export default function Account() {
       <BackLink onPress={() => router.back()} />
       <View style={styles.copy}>
         <Heading>Your account</Heading>
-        <AppText>Your budget is saved to this account.</AppText>
+        <AppText muted>Your budget is saved to this account.</AppText>
       </View>
-      <Row title={email} accessibilityLabel={`Email, ${email}`} />
+      <ListGroup>
+        <Row title={email} accessibilityLabel={`Email, ${email}`} />
+      </ListGroup>
       <Spacer />
       <View style={styles.actions}>
         <PrimaryButton label="Log out" onPress={() => router.push('/log-out')} />
         <TextButton
+          tone="plum"
           label="Delete my account and data"
           onPress={() => router.push('/delete-account')}
         />

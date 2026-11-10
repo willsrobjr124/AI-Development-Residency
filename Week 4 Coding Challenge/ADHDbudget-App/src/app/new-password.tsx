@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { useSaveOnce } from '@/components/forms';
 import {
   AppText,
+  ErrorText,
   BackLink,
   Field,
   Heading,
@@ -55,7 +56,7 @@ export default function NewPassword() {
       <BackLink onPress={() => router.replace('/log-in')} />
       <View style={styles.copy}>
         <Heading>Set a new password</Heading>
-        <AppText>We sent a code to {email}. It can take a minute.</AppText>
+        <AppText muted>We sent a code to {email}. It can take a minute.</AppText>
       </View>
       <View style={styles.fields}>
         <Field
@@ -70,9 +71,7 @@ export default function NewPassword() {
         <PasswordField label="New password" isNew value={password} onChange={setPassword} />
       </View>
       {problem ? (
-        <AppText variant="bodyBold" accessibilityLiveRegion="polite">
-          {problem}
-        </AppText>
+        <ErrorText>{problem}</ErrorText>
       ) : null}
       <Spacer />
       <View style={styles.actions}>

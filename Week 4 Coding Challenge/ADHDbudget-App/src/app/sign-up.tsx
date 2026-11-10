@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { useSaveOnce } from '@/components/forms';
 import {
   AppText,
+  ErrorText,
   BackLink,
   Field,
   Heading,
@@ -54,7 +55,7 @@ export default function SignUp() {
       <BackLink onPress={() => router.back()} />
       <View style={styles.copy}>
         <Heading>Create your account</Heading>
-        <AppText>Your budget stays private, and it&apos;s here whenever you come back.</AppText>
+        <AppText muted>Your budget stays private, and it&apos;s here whenever you come back.</AppText>
       </View>
       <View style={styles.fields}>
         <Field
@@ -82,12 +83,10 @@ export default function SignUp() {
             setPasswordProblem(null);
           }}
         />
-        <AppText>At least 8 characters. Pasting and password managers work here.</AppText>
+        <AppText muted>At least 8 characters. Pasting and password managers work here.</AppText>
       </View>
       {problem ? (
-        <AppText variant="bodyBold" accessibilityLiveRegion="polite">
-          {problem}
-        </AppText>
+        <ErrorText>{problem}</ErrorText>
       ) : null}
       <Spacer />
       <View style={styles.actions}>

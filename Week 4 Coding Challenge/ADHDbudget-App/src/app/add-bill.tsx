@@ -6,9 +6,11 @@ import { Calendar } from '@/components/calendar';
 import { COULD_NOT_SAVE, NEEDS_NUMBER, useSaveOnce } from '@/components/forms';
 import {
   AppText,
+  ErrorText,
   BackLink,
   Field,
   Heading,
+  ListGroup,
   PrimaryButton,
   Screen,
   Spacer,
@@ -81,8 +83,10 @@ export default function AddBill() {
           }}
         />
         <View style={styles.date}>
-          <AppText>Due date</AppText>
-          <AppText variant="bodyBold" accessibilityLiveRegion="polite">
+          <AppText variant="footnote" muted>
+            Due date
+          </AppText>
+          <AppText accessibilityLiveRegion="polite">
             {dueDate ? longDate(dueDate) : 'Pick a day below'}
           </AppText>
           <Calendar
@@ -94,18 +98,16 @@ export default function AddBill() {
             }}
           />
           {errors.date ? (
-            <AppText variant="bodyBold" accessibilityLiveRegion="polite">
-              {errors.date}
-            </AppText>
+            <ErrorText>{errors.date}</ErrorText>
           ) : null}
         </View>
-        <SwitchRow label="Every month" value={repeatsMonthly} onChange={setRepeatsMonthly} />
+        <ListGroup>
+          <SwitchRow label="Every month" value={repeatsMonthly} onChange={setRepeatsMonthly} />
+        </ListGroup>
       </View>
 
       {errors.save ? (
-        <AppText variant="bodyBold" accessibilityLiveRegion="polite">
-          {errors.save}
-        </AppText>
+        <ErrorText>{errors.save}</ErrorText>
       ) : null}
 
       <Spacer />

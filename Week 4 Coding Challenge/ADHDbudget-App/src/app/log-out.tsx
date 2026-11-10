@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useSaveOnce } from '@/components/forms';
-import { AppText, Heading, PrimaryButton, Screen, Spacer, TextButton } from '@/components/ui';
+import { AppText, ErrorText, Heading, PrimaryButton, Screen, Spacer, TextButton } from '@/components/ui';
 import { authErrorMessage } from '@/domain/auth';
 import { useAuth } from '@/hooks/use-auth';
 import { space } from '@/theme';
@@ -18,11 +18,9 @@ export default function LogOut() {
       <Spacer />
       <View style={styles.copy}>
         <Heading>Log out on this device?</Heading>
-        <AppText>Your budget stays safe in your account. Log in any time to see it.</AppText>
+        <AppText muted>Your budget stays safe in your account. Log in any time to see it.</AppText>
         {problem ? (
-          <AppText variant="bodyBold" accessibilityLiveRegion="polite">
-            {problem}
-          </AppText>
+          <ErrorText>{problem}</ErrorText>
         ) : null}
       </View>
       <Spacer />

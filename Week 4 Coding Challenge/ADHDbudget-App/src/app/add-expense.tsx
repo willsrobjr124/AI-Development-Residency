@@ -47,7 +47,7 @@ export default function AddExpense() {
 
       <View style={styles.copy}>
         <Heading>How much did you spend?</Heading>
-        <AppText>Picking a category is optional.</AppText>
+        <AppText muted>Picking a category is optional.</AppText>
       </View>
 
       <MoneyField
@@ -73,7 +73,7 @@ export default function AddExpense() {
       </View>
 
       {category === 'Bills' ? (
-        <AppText>If this pays a bill on your list, use Mark paid there instead.</AppText>
+        <AppText muted>If this pays a bill on your list, use Mark paid there instead.</AppText>
       ) : null}
 
       <Spacer />

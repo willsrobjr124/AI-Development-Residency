@@ -16,15 +16,23 @@ describe.each<[string, Colors]>([
   ['dark', dark],
 ])('%s colors', (_name, colors) => {
   it('text pairs reach 4.5:1', () => {
-    expect(contrast(colors.text, colors.background)).toBeGreaterThanOrEqual(4.5);
-    expect(contrast(colors.buttonText, colors.button)).toBeGreaterThanOrEqual(4.5);
-    expect(contrast(colors.confirmationText, colors.confirmation)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(colors.label, colors.background)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(colors.label, colors.groupedBackground)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(colors.secondaryLabel, colors.background)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(colors.secondaryLabel, colors.groupedBackground)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(colors.onAccent, colors.accent)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(colors.link, colors.background)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(colors.link, colors.groupedBackground)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(colors.plumText, colors.background)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(colors.onPlum, colors.plum)).toBeGreaterThanOrEqual(4.5);
   });
 
-  it('bucket fills and the button shape reach 3:1, except the outlined Savings fill', () => {
+  it('bucket fills, the button shape and progress reach 3:1, except the outlined Savings fill', () => {
     expect(contrast(colors.bucketSpending, colors.background)).toBeGreaterThanOrEqual(3);
     expect(contrast(colors.bucketBills, colors.background)).toBeGreaterThanOrEqual(3);
-    expect(contrast(colors.button, colors.background)).toBeGreaterThanOrEqual(3);
+    expect(contrast(colors.accent, colors.background)).toBeGreaterThanOrEqual(3);
+    expect(contrast(colors.brand, colors.background)).toBeGreaterThanOrEqual(3);
+    expect(contrast(colors.jarBorder, colors.background)).toBeGreaterThanOrEqual(3);
   });
 
   it('never uses red for money', () => {
@@ -32,6 +40,8 @@ describe.each<[string, Colors]>([
       const [r, g, b] = [1, 3, 5].map((start) => parseInt(hex.slice(start, start + 2), 16));
       return r > 150 && g < 100 && b < 100;
     };
-    expect(Object.values(colors).filter(isRed)).toEqual([]);
+    expect(Object.values(colors).filter((value) => value.startsWith('#') && isRed(value))).toEqual(
+      [],
+    );
   });
 });
