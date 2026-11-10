@@ -117,10 +117,10 @@ export function PrivacyGate({ children }: { children: ReactNode }) {
             },
           ]}>
           <Spacer />
-          <Ionicons name="lock-closed-outline" size={48} color={colors.text} />
+          <Ionicons name="lock-closed-outline" size={48} color={colors.label} />
           <View style={styles.copy}>
             <Heading>{LOCKED_MESSAGE}</Heading>
-            <AppText>
+            <AppText muted>
               {failed
                 ? "That didn't unlock. Your money is safe, so try again."
                 : 'Unlock to pick up where you left off.'}
@@ -131,7 +131,7 @@ export function PrivacyGate({ children }: { children: ReactNode }) {
         </View>
       ) : covered ? (
         <View style={[styles.cover, { backgroundColor: colors.background }]}>
-          <Ionicons name="lock-closed-outline" size={48} color={colors.text} />
+          <Ionicons name="lock-closed-outline" size={48} color={colors.label} />
         </View>
       ) : null}
     </View>

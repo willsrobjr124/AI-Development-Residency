@@ -4,7 +4,9 @@ import { StyleSheet, View } from 'react-native';
 import { Calendar } from '@/components/calendar';
 import {
   AppText,
+  ErrorText,
   Heading,
+  ListGroup,
   MoneyField,
   Option,
   PrimaryButton,
@@ -95,7 +97,7 @@ export function MoneyFormScreen({
       {top}
       <View style={styles.copy}>
         <Heading>{title}</Heading>
-        {helper ? <AppText>{helper}</AppText> : null}
+        {helper ? <AppText muted>{helper}</AppText> : null}
       </View>
       <MoneyField
         label={fieldLabel}
@@ -180,13 +182,18 @@ export function PaydayFormScreen({
       {top}
       <View style={styles.copy}>
         <Heading>{title}</Heading>
-        <AppText>{helper}</AppText>
+        <AppText muted>{helper}</AppText>
       </View>
-      <View style={styles.options}>
+      <ListGroup>
         <Option label="This Friday" selected={choice === 'first'} onPress={() => choose('first')} />
         <Option label="Next Friday" selected={choice === 'second'} onPress={() => choose('second')} />
-        <Option label="Pick a date" selected={choice === 'pick'} onPress={() => choose('pick')} />
-      </View>
+        <Option
+          label="Pick a date"
+          selected={choice === 'pick'}
+          chevron
+          onPress={() => choose('pick')}
+        />
+      </ListGroup>
       {choice === 'pick' ? (
         <Calendar
           value={picked}
@@ -197,11 +204,7 @@ export function PaydayFormScreen({
           }}
         />
       ) : null}
-      {error ? (
-        <AppText variant="bodyBold" accessibilityLiveRegion="polite">
-          {error}
-        </AppText>
-      ) : null}
+      {error ? <ErrorText>{error}</ErrorText> : null}
       <Spacer />
       <PrimaryButton label={buttonLabel} onPress={save} />
     </Screen>
@@ -210,6 +213,5 @@ export function PaydayFormScreen({
 
 const styles = StyleSheet.create({
   copy: { gap: space.md },
-  options: { gap: space.md },
   actions: { gap: space.sm },
 });

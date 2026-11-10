@@ -1,11 +1,12 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useState, type ReactNode } from 'react';
+import { Children, createContext, Fragment, useContext, useState, type ReactNode } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
@@ -34,16 +35,34 @@ const riseIn = new Keyframe({
   },
 }).duration(motion.enter);
 
-type AppTextProps = TextProps & { variant?: TextVariant; color?: string };
+type Tone = 'accent' | 'plum';
 
-export function AppText({ variant = 'body', color, style, ...props }: AppTextProps) {
+type AppTextProps = TextProps & { variant?: TextVariant; color?: string; muted?: boolean };
+
+/** Text in the system font. `muted` is the secondary gray used for helper lines. */
+export function AppText({ variant = 'body', color, muted = false, style, ...props }: AppTextProps) {
   const colors = useColors();
-  return <Text {...props} style={[type[variant], { color: color ?? colors.text }, style]} />;
+  return (
+    <Text
+      {...props}
+      style={[type[variant], { color: color ?? (muted ? colors.secondaryLabel : colors.label) }, style]}
+    />
+  );
 }
 
 export function Heading({ children }: { children: ReactNode }) {
   return (
     <AppText variant="heading" accessibilityRole="header">
+      {children}
+    </AppText>
+  );
+}
+
+/** A plum message under a field or a form, read out when it appears. */
+export function ErrorText({ children }: { children: ReactNode }) {
+  const colors = useColors();
+  return (
+    <AppText variant="bodyBold" color={colors.plumText} accessibilityLiveRegion="polite">
       {children}
     </AppText>
   );
@@ -62,7 +81,7 @@ export function Screen({ children }: { children: ReactNode }) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.screen,
-          { paddingTop: insets.top + space.xl, paddingBottom: insets.bottom + space.xl },
+          { paddingTop: insets.top + space.md, paddingBottom: insets.bottom + space.lg },
         ]}>
         {children}
       </ScrollView>
@@ -107,32 +126,82 @@ function PressScale({
   );
 }
 
-export function PrimaryButton({ label, onPress }: { label: string; onPress: () => void }) {
+/** The one main action on a screen: a filled capsule. */
+export function PrimaryButton({
+  label,
+  onPress,
+  tone = 'accent',
+}: {
+  label: string;
+  onPress: () => void;
+  tone?: Tone;
+}) {
   const colors = useColors();
+  const fill = tone === 'plum' ? colors.plum : colors.accent;
+  const text = tone === 'plum' ? colors.onPlum : colors.onAccent;
   return (
-    <PressScale onPress={onPress} style={[styles.primary, { backgroundColor: colors.button }]}>
-      <AppText variant="button" color={colors.buttonText} style={styles.center}>
+    <PressScale onPress={onPress} style={[styles.primary, { backgroundColor: fill }]}>
+      <AppText variant="button" color={text} style={styles.center}>
         {label}
       </AppText>
     </PressScale>
   );
 }
 
-export function TextButton({ label, onPress }: { label: string; onPress: () => void }) {
+/** A second, quieter choice under the main button: borderless colored text. */
+export function TextButton({
+  label,
+  onPress,
+  tone = 'accent',
+}: {
+  label: string;
+  onPress: () => void;
+  tone?: Tone;
+}) {
+  const colors = useColors();
   return (
     <PressScale onPress={onPress} style={styles.textButton}>
-      <AppText variant="bodyBold">{label}</AppText>
+      <AppText color={tone === 'plum' ? colors.plumText : colors.link} style={styles.center}>
+        {label}
+      </AppText>
     </PressScale>
   );
 }
 
+/** A small action inside a row, such as Mark paid (outlined) or Remove (plain). */
 export function SmallButton({
   label,
   accessibilityLabel,
   onPress,
+  tone = 'accent',
+  outlined = true,
 }: {
   label: string;
   accessibilityLabel?: string;
+  onPress: () => void;
+  tone?: Tone;
+  outlined?: boolean;
+}) {
+  const colors = useColors();
+  const color = tone === 'plum' ? colors.plumText : colors.link;
+  return (
+    <PressScale
+      accessibilityLabel={accessibilityLabel}
+      onPress={onPress}
+      style={[styles.small, outlined ? { borderColor: color, borderWidth: 1.5 } : null]}>
+      <AppText color={color}>{label}</AppText>
+    </PressScale>
+  );
+}
+
+/** A round, frosted button for one icon, like the gear on Home. */
+export function GlassButton({
+  icon,
+  accessibilityLabel,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  accessibilityLabel: string;
   onPress: () => void;
 }) {
   const colors = useColors();
@@ -140,42 +209,28 @@ export function SmallButton({
     <PressScale
       accessibilityLabel={accessibilityLabel}
       onPress={onPress}
-      style={[styles.small, { borderColor: colors.text }]}>
-      <AppText variant="bodyBold">{label}</AppText>
+      style={[styles.glass, { backgroundColor: colors.glass, borderColor: colors.glassBorder }]}>
+      <Ionicons name={icon} size={24} color={colors.label} />
     </PressScale>
   );
 }
 
+/** Back: a glass chevron with the name of where it goes. */
 export function BackLink({ label = 'Back', onPress }: { label?: string; onPress: () => void }) {
+  const colors = useColors();
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={styles.back}>
-      <AppText variant="bodyBold">{label}</AppText>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+      style={styles.back}>
+      <View
+        style={[styles.glass, { backgroundColor: colors.glass, borderColor: colors.glassBorder }]}>
+        <Ionicons name="chevron-back" size={24} color={colors.label} />
+      </View>
+      <AppText color={colors.link}>{label}</AppText>
     </Pressable>
   );
-}
-
-function SelectedCheck({ show, color, iconSize }: { show: boolean; color: string; iconSize: number }) {
-  if (!show) return null;
-  return <Ionicons name="checkmark" size={iconSize} color={color} />;
-}
-
-function useSelectStyle(selected: boolean): { fill: ViewStyle; textColor: string } {
-  const colors = useColors();
-  const reduced = useReducedMotion();
-  return {
-    textColor: selected ? colors.buttonText : colors.text,
-    fill: {
-      borderColor: colors.button,
-      backgroundColor: selected ? colors.button : colors.background,
-      ...(reduced
-        ? {}
-        : {
-            transitionProperty: 'backgroundColor',
-            transitionDuration: motion.select,
-            transitionTimingFunction: EASE_OUT,
-          }),
-    } as ViewStyle,
-  };
 }
 
 export function Chip({
@@ -187,74 +242,173 @@ export function Chip({
   selected: boolean;
   onPress: () => void;
 }) {
-  const { fill, textColor } = useSelectStyle(selected);
+  const colors = useColors();
+  const reduced = useReducedMotion();
+  const textColor = selected ? colors.onAccent : colors.label;
   return (
-    <PressScale accessibilityState={{ selected }} onPress={onPress} style={[styles.chip, fill]}>
-      <SelectedCheck show={selected} color={textColor} iconSize={18} />
+    <PressScale
+      accessibilityState={{ selected }}
+      onPress={onPress}
+      style={[
+        styles.chip,
+        {
+          backgroundColor: selected ? colors.accent : colors.groupedBackground,
+          ...(reduced
+            ? {}
+            : {
+                transitionProperty: 'backgroundColor',
+                transitionDuration: motion.select,
+                transitionTimingFunction: EASE_OUT,
+              }),
+        } as ViewStyle,
+      ]}>
+      {selected ? <Ionicons name="checkmark" size={18} color={textColor} /> : null}
       <AppText color={textColor}>{label}</AppText>
     </PressScale>
   );
 }
 
-export function Option({
-  label,
-  selected,
-  onPress,
-}: {
-  label: string;
-  selected: boolean;
-  onPress: () => void;
-}) {
-  const { fill, textColor } = useSelectStyle(selected);
+const GroupContext = createContext<{ plain: boolean } | null>(null);
+
+/**
+ * A list of rows with hairlines between them. By default it sits on a gray rounded card,
+ * like iOS inset grouped lists; `plain` drops the card for lists that fill the screen.
+ */
+export function ListGroup({ children, plain = false }: { children: ReactNode; plain?: boolean }) {
+  const colors = useColors();
+  const items = Children.toArray(children).filter(Boolean);
+  if (items.length === 0) return null;
   return (
-    <PressScale accessibilityState={{ selected }} onPress={onPress} style={[styles.option, fill]}>
-      <AppText color={textColor}>{label}</AppText>
-      <SelectedCheck show={selected} color={textColor} iconSize={22} />
-    </PressScale>
+    <GroupContext.Provider value={{ plain }}>
+      <View
+        style={
+          plain ? null : [styles.group, { backgroundColor: colors.groupedBackground }]
+        }>
+        {items.map((item, index) => (
+          <Fragment key={index}>
+            {index > 0 ? (
+              <View
+                style={[
+                  styles.separator,
+                  { backgroundColor: colors.separator, marginHorizontal: plain ? 0 : space.lg },
+                ]}
+              />
+            ) : null}
+            {item}
+          </Fragment>
+        ))}
+      </View>
+    </GroupContext.Provider>
   );
 }
 
-/** A full-width row. Rows highlight when pressed, because a scaling row looks like a squish. */
+/** The padding a row needs inside its group. */
+function useRowInset(): ViewStyle {
+  const group = useContext(GroupContext);
+  return { paddingHorizontal: group && !group.plain ? space.lg : 0 };
+}
+
+/** A custom row inside a ListGroup, for rows with their own buttons. */
+export function ListItem({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
+  const inset = useRowInset();
+  return <View style={[styles.row, inset, style]}>{children}</View>;
+}
+
+/** A list row. Rows highlight when pressed, because a scaling row looks like a squish. */
 export function Row({
   title,
+  subtitle,
   detail,
   accessibilityLabel,
   onPress,
-  divider = true,
+  selected,
+  strong = false,
 }: {
   title: string;
+  subtitle?: string;
   detail?: string;
   accessibilityLabel?: string;
   onPress?: () => void;
+  /** Shows a checkmark when true, for picking one of a few options. */
+  selected?: boolean;
+  strong?: boolean;
+  /** No longer needed: ListGroup draws the lines. Kept so older calls still type-check. */
   divider?: boolean;
 }) {
   const colors = useColors();
+  const inset = useRowInset();
   const content = (
     <>
-      <AppText style={styles.rowTitle}>{title}</AppText>
-      {detail ? <AppText variant="bodyBold">{detail}</AppText> : null}
-      {onPress ? <Ionicons name="chevron-forward" size={20} color={colors.text} /> : null}
+      <View style={styles.rowTitle}>
+        <AppText variant={strong ? 'bodyBold' : 'body'}>{title}</AppText>
+        {subtitle ? (
+          <AppText variant="subhead" muted>
+            {subtitle}
+          </AppText>
+        ) : null}
+      </View>
+      {detail ? <AppText muted>{detail}</AppText> : null}
+      {selected ? <Ionicons name="checkmark" size={22} color={colors.label} /> : null}
+      {onPress && selected === undefined ? (
+        <Ionicons name="chevron-forward" size={18} color={colors.tertiaryLabel} />
+      ) : null}
     </>
   );
-  const line = divider ? { borderBottomColor: colors.line, borderBottomWidth: 1 } : null;
   if (!onPress) {
     return (
-      <View accessible accessibilityLabel={accessibilityLabel} style={[styles.row, line]}>
+      <View accessible accessibilityLabel={accessibilityLabel} style={[styles.row, inset]}>
         {content}
       </View>
     );
   }
   return (
     <Pressable
-      accessibilityRole="button"
+      accessibilityRole={selected === undefined ? 'button' : 'radio'}
+      accessibilityState={selected === undefined ? undefined : { checked: selected }}
       accessibilityLabel={accessibilityLabel}
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,
-        line,
+        inset,
         pressed ? { backgroundColor: colors.pressed } : null,
       ]}>
       {content}
+    </Pressable>
+  );
+}
+
+/** One choice of a few, shown as a row with a checkmark. Place it inside a ListGroup. */
+export function Option({
+  label,
+  selected,
+  onPress,
+  chevron = false,
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+  /** Shows a chevron when not selected, for an option that opens more choices. */
+  chevron?: boolean;
+}) {
+  const colors = useColors();
+  const inset = useRowInset();
+  return (
+    <Pressable
+      accessibilityRole="radio"
+      accessibilityState={{ checked: selected }}
+      accessibilityLabel={label}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.row,
+        inset,
+        pressed ? { backgroundColor: colors.pressed } : null,
+      ]}>
+      <AppText style={styles.rowTitle}>{label}</AppText>
+      {selected ? (
+        <Ionicons name="checkmark" size={22} color={colors.label} />
+      ) : chevron ? (
+        <Ionicons name="chevron-forward" size={18} color={colors.tertiaryLabel} />
+      ) : null}
     </Pressable>
   );
 }
@@ -269,25 +423,55 @@ export function SwitchRow({
   onChange: (value: boolean) => void;
 }) {
   const colors = useColors();
+  const inset = useRowInset();
   return (
-    <Pressable
-      accessibilityRole="switch"
-      accessibilityLabel={label}
-      accessibilityState={{ checked: value }}
-      onPress={() => onChange(!value)}
-      style={[styles.row, { borderBottomColor: colors.line, borderBottomWidth: 1 }]}>
-      <AppText style={styles.rowTitle}>{label}</AppText>
+    <View style={[styles.row, inset]}>
+      <AppText style={styles.rowTitle} importantForAccessibility="no" accessibilityElementsHidden>
+        {label}
+      </AppText>
+      <Switch
+        accessibilityLabel={label}
+        value={value}
+        onValueChange={onChange}
+        trackColor={{ false: colors.separator, true: colors.switchOn }}
+        thumbColor="#FFFFFF"
+        ios_backgroundColor={colors.separator}
+        // The web version colors the "on" knob separately.
+        {...({ activeThumbColor: '#FFFFFF' } as object)}
+      />
+    </View>
+  );
+}
+
+/** A gray filled text field with its label inside, as in the iOS kit. */
+function FieldBox({
+  label,
+  error,
+  children,
+}: {
+  label: string;
+  error?: string | null;
+  children: ReactNode;
+}) {
+  const colors = useColors();
+  return (
+    <View style={styles.fieldGroup}>
       <View
         style={[
-          styles.track,
-          { borderColor: colors.button, backgroundColor: value ? colors.button : 'transparent' },
-          value ? styles.trackOn : null,
+          styles.field,
+          {
+            backgroundColor: colors.groupedBackground,
+            borderBottomColor: error ? colors.plum : colors.fieldLine,
+            borderBottomWidth: error ? 3 : 1.5,
+          },
         ]}>
-        <View
-          style={[styles.knob, { backgroundColor: value ? colors.buttonText : colors.button }]}
-        />
+        <AppText variant="footnote" importantForAccessibility="no" accessibilityElementsHidden>
+          {label}
+        </AppText>
+        {children}
       </View>
-    </Pressable>
+      {error ? <ErrorText>{error}</ErrorText> : null}
+    </View>
   );
 }
 
@@ -298,23 +482,14 @@ export function Field({
 }: TextInputProps & { label: string; error?: string | null }) {
   const colors = useColors();
   return (
-    <View style={styles.fieldGroup}>
-      <View style={[styles.field, { borderBottomColor: colors.text, borderBottomWidth: error ? 4 : 2 }]}>
-        <AppText importantForAccessibility="no" accessibilityElementsHidden>
-          {label}
-        </AppText>
-        <TextInput
-          accessibilityLabel={label}
-          {...props}
-          style={[type.bodyBold, styles.fieldInput, { color: colors.text }]}
-        />
-      </View>
-      {error ? (
-        <AppText variant="bodyBold" accessibilityLiveRegion="polite">
-          {error}
-        </AppText>
-      ) : null}
-    </View>
+    <FieldBox label={label} error={error}>
+      <TextInput
+        accessibilityLabel={label}
+        placeholderTextColor={colors.secondaryLabel}
+        {...props}
+        style={[type.body, styles.fieldInput, { color: colors.label }]}
+      />
+    </FieldBox>
   );
 }
 
@@ -334,39 +509,30 @@ export function PasswordField({
   const colors = useColors();
   const [shown, setShown] = useState(false);
   return (
-    <View style={styles.fieldGroup}>
-      <View
-        style={[styles.field, { borderBottomColor: colors.text, borderBottomWidth: error ? 4 : 2 }]}>
-        <AppText importantForAccessibility="no" accessibilityElementsHidden>
-          {label}
-        </AppText>
-        <View style={styles.passwordRow}>
-          <TextInput
-            accessibilityLabel={label}
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoComplete={isNew ? 'new-password' : 'current-password'}
-            textContentType={isNew ? 'newPassword' : 'password'}
-            secureTextEntry={!shown}
-            value={value}
-            onChangeText={onChange}
-            style={[type.bodyBold, styles.fieldInput, styles.passwordInput, { color: colors.text }]}
-          />
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={shown ? 'Hide password' : 'Show password'}
-            onPress={() => setShown(!shown)}
-            style={styles.showPassword}>
-            <AppText variant="bodyBold">{shown ? 'Hide' : 'Show'}</AppText>
-          </Pressable>
-        </View>
+    <FieldBox label={label} error={error}>
+      <View style={styles.passwordRow}>
+        <TextInput
+          accessibilityLabel={label}
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete={isNew ? 'new-password' : 'current-password'}
+          textContentType={isNew ? 'newPassword' : 'password'}
+          secureTextEntry={!shown}
+          value={value}
+          onChangeText={onChange}
+          style={[type.body, styles.fieldInput, styles.passwordInput, { color: colors.label }]}
+        />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={shown ? 'Hide password' : 'Show password'}
+          onPress={() => setShown(!shown)}
+          style={styles.showPassword}>
+          <AppText variant="bodyBold" color={colors.link}>
+            {shown ? 'Hide' : 'Show'}
+          </AppText>
+        </Pressable>
       </View>
-      {error ? (
-        <AppText variant="bodyBold" accessibilityLiveRegion="polite">
-          {error}
-        </AppText>
-      ) : null}
-    </View>
+    </FieldBox>
   );
 }
 
@@ -389,7 +555,10 @@ export function MoneyField({
       <View
         style={[
           styles.moneyField,
-          { borderBottomColor: colors.text, borderBottomWidth: error ? 4 : 2 },
+          {
+            borderBottomColor: error ? colors.plum : colors.brand,
+            borderBottomWidth: error ? 3 : 2,
+          },
         ]}>
         <AppText variant="amountInput" importantForAccessibility="no" accessibilityElementsHidden>
           $
@@ -402,14 +571,10 @@ export function MoneyField({
           value={value}
           onChangeText={onChange}
           onSubmitEditing={onSubmit}
-          style={[type.amountInput, styles.moneyInput, { color: colors.text }]}
+          style={[type.amountInput, styles.moneyInput, { color: colors.label }]}
         />
       </View>
-      {error ? (
-        <AppText variant="bodyBold" accessibilityLiveRegion="polite">
-          {error}
-        </AppText>
-      ) : null}
+      {error ? <ErrorText>{error}</ErrorText> : null}
     </View>
   );
 }
@@ -424,12 +589,14 @@ export function StepProgress({ step }: { step: number }) {
             key={segment}
             style={[
               styles.segment,
-              { backgroundColor: segment <= step ? colors.button : colors.line },
+              { backgroundColor: segment <= step ? colors.brand : colors.progressTrack },
             ]}
           />
         ))}
       </View>
-      <AppText>Step {step} of 4</AppText>
+      <AppText variant="footnote" muted>
+        Step {step} of 4
+      </AppText>
     </View>
   );
 }
@@ -455,8 +622,8 @@ export function CheckCircle() {
                 },
               }).duration(motion.enter)
         }
-        style={[styles.check, { backgroundColor: colors.button }]}>
-        <Ionicons name="checkmark" size={48} color={colors.buttonText} />
+        style={[styles.check, { backgroundColor: colors.brand }]}>
+        <Ionicons name="checkmark" size={48} color={colors.onBrand} />
       </Animated.View>
     </View>
   );
@@ -477,9 +644,9 @@ export function Confirmation({
     <Animated.View
       entering={reduced ? undefined : riseIn}
       accessibilityLiveRegion="polite"
-      style={[styles.confirmation, { backgroundColor: colors.confirmation }]}>
+      style={[styles.confirmation, { backgroundColor: colors.groupedBackground }]}>
       <View style={styles.confirmationMessage}>
-        <AppText color={colors.confirmationText}>{message}</AppText>
+        <AppText>{message}</AppText>
       </View>
       {actionLabel && onAction ? (
         <Pressable
@@ -487,9 +654,7 @@ export function Confirmation({
           accessibilityHint={message}
           onPress={onAction}
           style={styles.confirmationAction}>
-          <AppText variant="bodyBold" color={colors.confirmationText}>
-            {actionLabel}
-          </AppText>
+          <AppText color={colors.link}>{actionLabel}</AppText>
         </Pressable>
       ) : null}
     </Animated.View>
@@ -499,66 +664,71 @@ export function Confirmation({
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   center: { textAlign: 'center' },
-  screen: { flexGrow: 1, paddingHorizontal: size.screenPadding, gap: space.xxl },
+  screen: { flexGrow: 1, paddingHorizontal: size.screenPadding, gap: space.xl },
   primary: {
-    minHeight: 58,
-    borderRadius: radius.control,
-    paddingVertical: 18,
-    paddingHorizontal: space.lg,
+    minHeight: size.buttonHeight,
+    borderRadius: size.buttonHeight / 2,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
   textButton: { minHeight: 48, alignItems: 'center', justifyContent: 'center' },
   small: {
-    minHeight: 48,
-    borderRadius: radius.control,
-    borderWidth: 1.5,
-    paddingHorizontal: 14,
+    minHeight: size.minTarget,
+    borderRadius: radius.small,
+    paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  back: { minHeight: 46, justifyContent: 'center', alignSelf: 'stretch' },
+  glass: {
+    width: size.glassButton,
+    height: size.glassButton,
+    borderRadius: size.glassButton / 2,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 4,
+  },
+  back: {
+    minHeight: size.glassButton,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.sm,
+    alignSelf: 'flex-start',
+  },
   chip: {
     minHeight: size.minTarget,
     borderRadius: radius.chip,
-    borderWidth: 1.5,
     paddingHorizontal: space.lg,
-    paddingVertical: 7.5,
+    paddingVertical: 11,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },
-  option: {
-    minHeight: 58,
-    borderRadius: radius.control,
-    borderWidth: 1.5,
-    paddingHorizontal: 18,
-    paddingVertical: 14.5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: space.md,
-  },
+  group: { borderRadius: radius.group, overflow: 'hidden' },
+  separator: { height: StyleSheet.hairlineWidth * 2 },
   row: {
-    minHeight: 56,
+    minHeight: size.rowHeight,
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.md,
-    paddingVertical: space.md,
+    paddingVertical: 11,
   },
   rowTitle: { flex: 1 },
-  track: {
-    width: 51,
-    height: 31,
-    borderRadius: 16,
-    borderWidth: 2,
-    padding: 3,
-    justifyContent: 'center',
-  },
-  trackOn: { alignItems: 'flex-end' },
-  knob: { width: 21, height: 21, borderRadius: 11 },
   fieldGroup: { gap: space.sm },
-  field: { paddingBottom: space.sm, gap: 2 },
+  field: {
+    borderTopLeftRadius: radius.field,
+    borderTopRightRadius: radius.field,
+    paddingHorizontal: space.md,
+    paddingTop: space.sm,
+    paddingBottom: space.sm,
+    gap: 2,
+  },
   fieldInput: { padding: 0, minHeight: 26 },
   passwordRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   passwordInput: { flex: 1, minWidth: 0 },
@@ -570,7 +740,7 @@ const styles = StyleSheet.create({
   },
   moneyField: { flexDirection: 'row', alignItems: 'center', paddingBottom: space.sm },
   moneyInput: { flex: 1, padding: 0, minWidth: 0 },
-  progress: { gap: 10 },
+  progress: { gap: space.md },
   segments: { flexDirection: 'row', gap: 6 },
   segment: { flex: 1, height: 6, borderRadius: 3 },
   checkSpace: { height: 96, flexShrink: 0, alignItems: 'center' },
@@ -583,7 +753,7 @@ const styles = StyleSheet.create({
   },
   confirmation: {
     minHeight: 56,
-    borderRadius: radius.control,
+    borderRadius: radius.confirmation,
     paddingLeft: space.lg,
     flexDirection: 'row',
     alignItems: 'stretch',

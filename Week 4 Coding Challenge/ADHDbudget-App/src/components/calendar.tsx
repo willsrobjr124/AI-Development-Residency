@@ -6,7 +6,7 @@ import { AppText } from '@/components/ui';
 import { longDate, monthGrid, monthTitle } from '@/domain/dates';
 import { size, useColors } from '@/theme';
 
-const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
 function parts(date: string): { year: number; month: number; day: number } {
   const [year, month, day] = date.split('-').map(Number);
@@ -41,6 +41,9 @@ export function Calendar({
   return (
     <View style={styles.calendar}>
       <View style={styles.header}>
+        <AppText variant="bodyBold" accessibilityLiveRegion="polite" style={styles.title}>
+          {monthTitle(year, month)}
+        </AppText>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Previous month"
@@ -48,24 +51,23 @@ export function Calendar({
           disabled={!canGoBack}
           onPress={() => shift(-1)}
           style={[styles.nav, canGoBack ? null : styles.hidden]}>
-          <Ionicons name="chevron-back" size={22} color={colors.text} />
+          <Ionicons name="chevron-back" size={22} color={colors.link} />
         </Pressable>
-        <AppText variant="bodyBold" accessibilityLiveRegion="polite">
-          {monthTitle(year, month)}
-        </AppText>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Next month"
           onPress={() => shift(1)}
           style={styles.nav}>
-          <Ionicons name="chevron-forward" size={22} color={colors.text} />
+          <Ionicons name="chevron-forward" size={22} color={colors.link} />
         </Pressable>
       </View>
 
       <View style={styles.week} importantForAccessibility="no-hide-descendants">
         {WEEKDAYS.map((day, index) => (
           <View key={index} style={styles.cell}>
-            <AppText>{day}</AppText>
+            <AppText variant="footnote" muted style={styles.weekday}>
+              {day}
+            </AppText>
           </View>
         ))}
       </View>
@@ -79,7 +81,9 @@ export function Calendar({
             if (disabled) {
               return (
                 <View key={date} style={[styles.cell, styles.past]}>
-                  <AppText>{parts(date).day}</AppText>
+                  <AppText variant="title" muted style={styles.dayText}>
+                    {parts(date).day}
+                  </AppText>
                 </View>
               );
             }
@@ -93,11 +97,12 @@ export function Calendar({
                 style={[
                   styles.cell,
                   styles.day,
-                  selected ? { backgroundColor: colors.button } : null,
+                  selected ? { backgroundColor: colors.calendarSelected } : null,
                 ]}>
                 <AppText
-                  variant={selected ? 'bodyBold' : 'body'}
-                  color={selected ? colors.buttonText : colors.text}>
+                  variant="title"
+                  color={selected ? colors.link : colors.label}
+                  style={[styles.dayText, selected ? styles.selectedText : null]}>
                   {parts(date).day}
                 </AppText>
               </Pressable>
@@ -111,7 +116,11 @@ export function Calendar({
 
 const styles = StyleSheet.create({
   calendar: { gap: 2 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  header: { flexDirection: 'row', alignItems: 'center' },
+  title: { flex: 1 },
+  weekday: { fontWeight: '600' },
+  dayText: { fontSize: 20, lineHeight: 25, fontWeight: '400' },
+  selectedText: { fontWeight: '600' },
   nav: {
     width: size.minTarget,
     height: size.minTarget,

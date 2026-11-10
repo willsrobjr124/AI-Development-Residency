@@ -1,7 +1,5 @@
 import { router } from 'expo-router';
-import { View } from 'react-native';
-
-import { AppText, BackLink, Heading, Row, Screen, SwitchRow } from '@/components/ui';
+import { AppText, BackLink, Heading, ListGroup, Row, Screen, SwitchRow } from '@/components/ui';
 import { shortDate } from '@/domain/dates';
 import { formatCents, spokenCents } from '@/domain/money';
 import { useMoney } from '@/hooks/use-money';
@@ -17,7 +15,7 @@ export default function Settings() {
       <BackLink label="Home" onPress={() => router.back()} />
       <Heading>Settings</Heading>
 
-      <View>
+      <ListGroup>
         <Row title="Account" onPress={() => router.push('/account')} />
         <Row
           title="Balance"
@@ -47,9 +45,9 @@ export default function Settings() {
           value={preferences.allowScreenshots}
           onChange={(value) => setPreference('allowScreenshots', value)}
         />
-      </View>
+      </ListGroup>
 
-      <AppText>
+      <AppText variant="footnote" muted>
         Screenshots stay off so your money stays hidden in the recent apps list. Turn them on if you
         want to take one.
       </AppText>

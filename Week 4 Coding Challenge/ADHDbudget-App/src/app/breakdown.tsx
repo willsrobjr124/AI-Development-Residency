@@ -1,7 +1,16 @@
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
-import { AppText, BackLink, Heading, PrimaryButton, Row, Screen, Spacer } from '@/components/ui';
+import {
+  AppText,
+  BackLink,
+  Heading,
+  ListGroup,
+  PrimaryButton,
+  Row,
+  Screen,
+  Spacer,
+} from '@/components/ui';
 import { formatCents, spokenCents } from '@/domain/money';
 import { useMoney } from '@/hooks/use-money';
 import { space } from '@/theme';
@@ -23,7 +32,7 @@ export default function Breakdown() {
       <BackLink onPress={() => router.back()} />
       <Heading>How we worked out your number</Heading>
 
-      <View>
+      <ListGroup plain>
         {summary.breakdown.map((line) => (
           <Row
             key={line.label}
@@ -33,20 +42,22 @@ export default function Breakdown() {
             onPress={line.label === 'Spent since then' ? () => router.push('/recent') : undefined}
           />
         ))}
-      </View>
+      </ListGroup>
 
       <View
         accessible
         accessibilityLabel={`Safe to spend, ${spokenCents(summary.safeCents)}`}
         style={styles.total}>
-        <AppText variant="sentence" style={styles.label}>
+        <AppText variant="title" style={styles.label}>
           Safe to spend
         </AppText>
-        <AppText variant="heading">{formatCents(summary.safeCents)}</AppText>
+        <AppText variant="title">{formatCents(summary.safeCents)}</AppText>
       </View>
 
       {summary.isShort ? (
-        <AppText>Bills and savings need more than your balance, so your number stays at $0.</AppText>
+        <AppText muted>
+          Bills and savings need more than your balance, so your number stays at $0.
+        </AppText>
       ) : null}
 
       <Spacer />

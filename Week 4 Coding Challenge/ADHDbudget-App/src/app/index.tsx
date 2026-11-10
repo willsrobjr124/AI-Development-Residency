@@ -4,7 +4,16 @@ import { useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Buckets } from '@/components/buckets';
-import { AppText, Confirmation, PrimaryButton, Row, Screen, Spacer } from '@/components/ui';
+import {
+  AppText,
+  Confirmation,
+  GlassButton,
+  ListGroup,
+  PrimaryButton,
+  Row,
+  Screen,
+  Spacer,
+} from '@/components/ui';
 import { untilLabel } from '@/domain/dates';
 import { formatCents, spokenCents } from '@/domain/money';
 import { nextBillLine, paydayHasPassed } from '@/domain/safeToSpend';
@@ -37,19 +46,17 @@ export default function Home() {
       <View style={styles.sentence}>
         <View style={styles.topRow}>
           <AppText
-            variant="sentence"
+            muted
             importantForAccessibility="no"
             accessibilityElementsHidden
             style={styles.flex}>
             You can safely spend
           </AppText>
-          <Pressable
-            accessibilityRole="button"
+          <GlassButton
+            icon="settings-outline"
             accessibilityLabel="Settings"
             onPress={() => router.push('/settings')}
-            style={styles.icon}>
-            <Ionicons name="settings-outline" size={24} color={colors.text} />
-          </Pressable>
+          />
         </View>
         <View style={styles.numberRow}>
           <AppText
@@ -67,10 +74,10 @@ export default function Home() {
             accessibilityLabel="Help: how your number was worked out"
             onPress={() => router.push('/breakdown')}
             style={styles.icon}>
-            <Ionicons name="help-circle-outline" size={26} color={colors.text} />
+            <Ionicons name="information-circle-outline" size={24} color={colors.link} />
           </Pressable>
         </View>
-        <AppText variant="sentence" importantForAccessibility="no" accessibilityElementsHidden>
+        <AppText muted importantForAccessibility="no" accessibilityElementsHidden>
           {until}
         </AppText>
       </View>
@@ -84,16 +91,21 @@ export default function Home() {
 
       <View style={styles.below}>
         {summary.isShort ? (
-          <AppText>Bills coming up use all of this period&apos;s money.</AppText>
+          <AppText variant="footnote" muted>
+            Bills coming up use all of this period&apos;s money.
+          </AppText>
         ) : !preferences.bucketHintSeen ? (
-          <AppText>Tap a bucket to move money between them.</AppText>
+          <AppText variant="footnote" muted>
+            Tap a bucket to move money between them.
+          </AppText>
         ) : null}
-        <Row
-          title={nextBillLine(inputs.unpaidBills, inputs.today)}
-          accessibilityLabel={`${nextBillLine(inputs.unpaidBills, inputs.today)}. See your bills`}
-          onPress={() => router.push('/bills')}
-          divider={false}
-        />
+        <ListGroup>
+          <Row
+            title={nextBillLine(inputs.unpaidBills, inputs.today)}
+            accessibilityLabel={`${nextBillLine(inputs.unpaidBills, inputs.today)}. See your bills`}
+            onPress={() => router.push('/bills')}
+          />
+        </ListGroup>
       </View>
 
       <Spacer />
@@ -121,11 +133,11 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  sentence: { gap: 2 },
+  sentence: { gap: space.xs },
   topRow: { flexDirection: 'row', alignItems: 'center' },
   numberRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
   number: { flexShrink: 1 },
-  below: { gap: space.xs },
+  below: { gap: space.xl },
   icon: {
     width: size.minTarget,
     height: size.minTarget,

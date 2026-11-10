@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { useSaveOnce } from '@/components/forms';
 import {
-  AppText,
+  ErrorText,
   BackLink,
   Field,
   Heading,
@@ -61,9 +61,7 @@ export default function LogIn() {
         <PasswordField label="Password" value={password} onChange={setPassword} />
       </View>
       {problem ? (
-        <AppText variant="bodyBold" accessibilityLiveRegion="polite">
-          {problem}
-        </AppText>
+        <ErrorText>{problem}</ErrorText>
       ) : null}
       <Spacer />
       <View style={styles.actions}>

@@ -8,7 +8,7 @@ export default function FreshStartDone() {
     <Screen>
       <Spacer />
       <CheckCircle />
-      <AppText variant="sentence" accessibilityRole="header" style={styles.center}>
+      <AppText variant="title" accessibilityRole="header" style={styles.center}>
         You&apos;re all set
       </AppText>
       <Spacer />

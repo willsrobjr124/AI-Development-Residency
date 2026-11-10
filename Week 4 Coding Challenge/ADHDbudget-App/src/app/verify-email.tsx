@@ -51,7 +51,7 @@ export default function VerifyEmail() {
       <BackLink onPress={() => router.back()} />
       <View style={styles.copy}>
         <Heading>Check your email</Heading>
-        <AppText>We sent a code to {email}. It can take a minute.</AppText>
+        <AppText muted>We sent a code to {email}. It can take a minute.</AppText>
       </View>
       <Field
         label="Code"

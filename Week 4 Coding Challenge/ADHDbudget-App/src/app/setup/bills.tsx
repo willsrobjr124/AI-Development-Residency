@@ -7,6 +7,7 @@ import {
   BackLink,
   Confirmation,
   Heading,
+  ListGroup,
   PrimaryButton,
   Row,
   Screen,
@@ -43,10 +44,10 @@ export default function SetupBills() {
 
       <View style={styles.copy}>
         <Heading>Which bills are due before payday?</Heading>
-        <AppText>Start with the big ones. You can add more later.</AppText>
+        <AppText muted>Start with the big ones. You can add more later.</AppText>
       </View>
 
-      <View>
+      <ListGroup>
         {inputs?.unpaidBills.map((bill) => (
           <Row
             key={bill.id}
@@ -56,7 +57,7 @@ export default function SetupBills() {
           />
         ))}
         <Row title="Add a bill" onPress={() => router.push('/add-bill')} />
-      </View>
+      </ListGroup>
 
       <Spacer />
 

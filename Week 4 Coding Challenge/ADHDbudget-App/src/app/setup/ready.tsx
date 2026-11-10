@@ -11,7 +11,7 @@ export default function SetupReady() {
     <Screen>
       <Spacer />
       <CheckCircle />
-      <AppText variant="sentence" accessibilityRole="header" style={styles.center}>
+      <AppText variant="title" accessibilityRole="header" style={styles.center}>
         Your number is ready
       </AppText>
       <Spacer />

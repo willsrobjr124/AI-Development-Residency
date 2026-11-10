@@ -13,7 +13,7 @@ export default function FreshStart() {
       <Spacer />
       <View style={styles.copy}>
         <Heading>Welcome back. Want a fresh start?</Heading>
-        <AppText>
+        <AppText muted>
           Items without a category move to Other, and you&apos;ll check your balance is right.
         </AppText>
       </View>

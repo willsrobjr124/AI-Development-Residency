@@ -7,6 +7,8 @@ import {
   BackLink,
   Confirmation,
   Heading,
+  ListGroup,
+  ListItem,
   Screen,
   SmallButton,
   Spacer,
@@ -15,10 +17,9 @@ import { shortDate } from '@/domain/dates';
 import { formatCents, spokenCents } from '@/domain/money';
 import { useMoney } from '@/hooks/use-money';
 import type { RecentExpense } from '@/data/repo';
-import { space, useColors } from '@/theme';
+
 
 export default function Recent() {
-  const colors = useColors();
   const { inputs, listRecent, removeExpense, notice, clearNotice } = useMoney();
   const [expenses, setExpenses] = useState<RecentExpense[] | null>(null);
   const [failed, setFailed] = useState(false);
@@ -49,32 +50,38 @@ export default function Recent() {
       <BackLink onPress={() => router.back()} />
       <Heading>Recent spending</Heading>
 
-      {failed ? <AppText>We couldn&apos;t load this just now. Your money is safe.</AppText> : null}
+      {failed ? (
+        <AppText muted>We couldn&apos;t load this just now. Your money is safe.</AppText>
+      ) : null}
 
-      {expenses && expenses.length === 0 ? <AppText>Nothing added yet.</AppText> : null}
+      {expenses && expenses.length === 0 ? <AppText muted>Nothing added yet.</AppText> : null}
 
-      <View>
+      <ListGroup>
         {expenses?.map((expense) => {
           const title = `${expense.category ?? 'No category'}, ${formatCents(expense.amountCents)}`;
           const when = shortDate(expense.createdAt.slice(0, 10));
           return (
-            <View key={expense.id} style={[styles.row, { borderBottomColor: colors.line }]}>
+            <ListItem key={expense.id} style={styles.row}>
               <View
                 accessible
                 accessibilityLabel={`${expense.category ?? 'No category'}, ${spokenCents(expense.amountCents)}, ${when}`}
                 style={styles.text}>
-                <AppText variant="bodyBold">{title}</AppText>
-                <AppText>{when}</AppText>
+                <AppText>{title}</AppText>
+                <AppText variant="subhead" muted>
+                  {when}
+                </AppText>
               </View>
               <SmallButton
                 label="Remove"
+                tone="plum"
+                outlined={false}
                 accessibilityLabel={`Remove ${title}`}
                 onPress={() => removeExpense(expense.id)}
               />
-            </View>
+            </ListItem>
           );
         })}
-      </View>
+      </ListGroup>
 
       <Spacer />
 
@@ -90,14 +97,6 @@ export default function Recent() {
 }
 
 const styles = StyleSheet.create({
-  row: {
-    minHeight: 72,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: space.md,
-    borderBottomWidth: 1,
-    paddingVertical: space.sm,
-  },
+  row: { minHeight: 64, justifyContent: 'space-between' },
   text: { flexShrink: 1 },
 });

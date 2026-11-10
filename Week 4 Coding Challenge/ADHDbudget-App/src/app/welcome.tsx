@@ -7,7 +7,7 @@ import { radius, space, useColors } from '@/theme';
 function Jar({ level, fill }: { level: number; fill: string }) {
   const colors = useColors();
   return (
-    <View style={[styles.jar, { borderColor: colors.text }]}>
+    <View style={[styles.jar, { borderColor: colors.jarBorder }]}>
       <View style={[styles.level, { height: level, backgroundColor: fill }]} />
     </View>
   );
@@ -26,7 +26,7 @@ export default function Welcome() {
       </View>
       <View style={styles.copy}>
         <Heading>See what&apos;s safe to spend, at a glance</Heading>
-        <AppText>Make an account, then four short steps. You can change anything later.</AppText>
+        <AppText muted>Make an account, then four short steps. You can change anything later.</AppText>
       </View>
       <Spacer />
       <View style={styles.actions}>
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     width: 72,
     height: 120,
     borderWidth: 1.5,
-    borderRadius: radius.control,
+    borderRadius: radius.jar,
     overflow: 'hidden',
     justifyContent: 'flex-end',
   },
